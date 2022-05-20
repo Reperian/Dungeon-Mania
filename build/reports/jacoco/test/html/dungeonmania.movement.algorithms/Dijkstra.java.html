@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Dijkstra.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project</a> &gt; <a href="index.source.html" class="el_package">dungeonmania.movement.algorithms</a> &gt; <span class="el_source">Dijkstra.java</span></div><h1>Dijkstra.java</h1><pre class="source lang-java linenums">package dungeonmania.movement.algorithms;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Set;
+
+import dungeonmania.dungeon.Dungeon;
+import dungeonmania.entities.Entity;
+import dungeonmania.entities.bomb.PlacedBomb;
+import dungeonmania.entities.boulder.Boulder;
+import dungeonmania.entities.door.LockedDoor;
+import dungeonmania.entities.player.Player;
+import dungeonmania.entities.swamp_tile.SwampTile;
+import dungeonmania.entities.unimplemented.UnimplementedEntity;
+import dungeonmania.entities.util.EntityUtils;
+import dungeonmania.entities.wall.Wall;
+import dungeonmania.response.models.EntityResponse;
+import dungeonmania.util.Position;
+
+public class Dijkstra {
+    private static final int OFFSET = 5;
+    private Entity entity;
+
+<span class="fc" id="L29">    private Map&lt;Position, Double&gt; dist = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L30">    private Map&lt;Position, Position&gt; prev = new HashMap&lt;&gt;();</span>
+    private List&lt;Position&gt; allPositions;
+<span class="fc" id="L32">    private Map&lt;Position, Integer&gt; costs = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L33">    private Position minPosition = new Position(Integer.MAX_VALUE, Integer.MAX_VALUE);</span>
+<span class="fc" id="L34">    private Position maxPosition = new Position(Integer.MIN_VALUE, Integer.MIN_VALUE);</span>
+    
+
+<span class="fc" id="L37">    public Dijkstra (Entity entity) {</span>
+<span class="fc" id="L38">        this.entity = entity;</span>
+        
+<span class="fc" id="L40">        updateSelf();</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">        for (Position position : allPositions) {</span>
+<span class="fc" id="L42">            dist.put(position, Double.POSITIVE_INFINITY);</span>
+<span class="fc" id="L43">            prev.put(position, null);</span>
+<span class="fc" id="L44">        }</span>
+<span class="fc" id="L45">        algorithm(entity.getPosition());</span>
+<span class="fc" id="L46">    }</span>
+    /**
+     * Updates the locations of all entities for the algorithm
+     */
+    private void updateSelf() {
+<span class="fc" id="L51">        this.allPositions = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L52">        Set&lt;Position&gt; nonTraverable = new HashSet&lt;&gt;();</span>
+<span class="fc" id="L53">        Position playerPos = null;</span>
+        // Gets a list of entities to remove from the traversable list
+<span class="fc bfc" id="L55" title="All 2 branches covered.">        for (Entity entity : Dungeon.getInstance().getEntities()) {</span>
+<span class="fc" id="L56">            Position position = new Position(entity.getPosition().getX(), entity.getPosition().getY());</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">            if (entity instanceof Player) {</span>
+<span class="fc" id="L58">                playerPos = position;</span>
+            }
+            // Set new bounds for the map
+<span class="fc bfc" id="L61" title="All 2 branches covered.">            maxPosition = position.getX() &gt; maxPosition.getX() ? new Position(position.getX(), maxPosition.getY()) : maxPosition;</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">            maxPosition = position.getY() &gt; maxPosition.getY() ? new Position(maxPosition.getX(), position.getY()) : maxPosition;</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">            minPosition = position.getX() &lt; minPosition.getX() ? new Position(position.getX(), minPosition.getY()) : minPosition;</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">            minPosition = position.getY() &lt; minPosition.getY() ? new Position(minPosition.getX(), position.getY()) : minPosition;</span>
+<span class="fc bfc" id="L65" title="All 8 branches covered.">            if (entity instanceof Wall || entity instanceof LockedDoor || entity instanceof Boulder || entity instanceof PlacedBomb) {</span>
+<span class="fc" id="L66">                nonTraverable.add(position);</span>
+<span class="fc" id="L67">                continue;</span>
+            }
+<span class="fc" id="L69">            costs.put(position, getCost(position));</span>
+<span class="fc" id="L70">        }</span>
+        // Makes the player trackable when inside another entity
+<span class="fc" id="L72">        nonTraverable.remove(playerPos);</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">        for (int y = minPosition.getY() - OFFSET; y &lt; maxPosition.getY() + OFFSET; y++) {</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">            for (int x = minPosition.getX() - OFFSET; x &lt; maxPosition.getX() + OFFSET; x++) {</span>
+<span class="fc" id="L75">                Position pos = new Position(x,y);</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">                if (costs.get(pos) == null) {</span>
+<span class="fc" id="L77">                    costs.put(pos, 1);</span>
+                }
+<span class="fc" id="L79">                allPositions.add(pos);</span>
+            }
+        }
+<span class="fc" id="L82">        allPositions.removeAll(nonTraverable);</span>
+<span class="fc" id="L83">    }</span>
+
+    private int getCost(Position pos) {
+<span class="fc" id="L86">        List&lt;Entity&gt; entities = EntityUtils.getEntitiesAtPosition(pos);</span>
+<span class="fc" id="L87">        List&lt;SwampTile&gt; swamp = EntityUtils.getEntitiesToTypeList(entities, SwampTile.class);</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">        return swamp.size() &gt; 0 ? swamp.get(0).getMovementFactor() : 1;</span>
+    }
+
+    // Gets neighbouring positions that are adjacent to the player
+    private List&lt;Position&gt; getCardinalNeighbours(Position position) {
+<span class="fc" id="L93">        List&lt;Position&gt; cardinalNeighbours = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">        for (Position adjacentPosition : position.getAdjacentFour()) {</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">            if (allPositions.contains(adjacentPosition)) {</span>
+<span class="fc" id="L96">                cardinalNeighbours.add(adjacentPosition);</span>
+            }
+<span class="fc" id="L98">        }</span>
+<span class="fc" id="L99">        return cardinalNeighbours;</span>
+    }
+    /**
+     * Dijkstras algorithm
+     * @param source
+     */
+    private void algorithm(Position source) {
+<span class="fc" id="L106">        Position src = new Position(source.getX(), source.getY());</span>
+
+<span class="fc" id="L108">        dist = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L109">        prev = new HashMap&lt;&gt;();</span>
+        // Set dist to infinity and position to null for all positions
+<span class="fc bfc" id="L111" title="All 2 branches covered.">        for (Position position : allPositions) {</span>
+<span class="fc" id="L112">            dist.put(position, Double.POSITIVE_INFINITY);</span>
+<span class="fc" id="L113">            prev.put(position, null);</span>
+<span class="fc" id="L114">        }</span>
+        // Set the src position to 0 dist
+<span class="fc" id="L116">        dist.put(src, 0.0);</span>
+        // This will sort in ascending order of distance
+<span class="fc" id="L118">        PriorityQueue&lt;Position&gt; queue = new PriorityQueue&lt;&gt;(allPositions.size(), new Comparator&lt;Position&gt;() {</span>
+            @Override
+            public int compare(Position a, Position b) {
+<span class="fc" id="L121">                return Double.compare(dist.get(a), dist.get(b));</span>
+            }
+        });
+<span class="fc" id="L124">        queue.addAll(allPositions);</span>
+        // Loop through everything
+<span class="fc bfc" id="L126" title="All 2 branches covered.">        while (!queue.isEmpty()) {</span>
+<span class="fc" id="L127">            Position next = queue.remove();</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">            for (Position neighbour : getCardinalNeighbours(next)) {</span>
+<span class="fc bfc" id="L129" title="All 2 branches covered.">                if (dist.get(next) + costs.get(neighbour) &lt; dist.get(neighbour)) {</span>
+<span class="fc" id="L130">                    dist.put(neighbour, dist.get(next) + costs.get(neighbour));</span>
+<span class="fc" id="L131">                    prev.put(neighbour, next);</span>
+<span class="fc" id="L132">                    queue.add(neighbour);</span>
+                }
+<span class="fc" id="L134">            }</span>
+
+<span class="fc" id="L136">        }</span>
+<span class="fc" id="L137">    }</span>
+
+    public Position getNextPosition(Position destination) {
+<span class="fc" id="L140">        Position dest = new Position(destination.getX(), destination.getY());</span>
+<span class="fc" id="L141">        Position src = new Position(entity.getPosition().getX(), entity.getPosition().getY());</span>
+
+<span class="fc" id="L143">        algorithm(src);</span>
+<span class="fc" id="L144">        Position current = dest;</span>
+        
+<span class="fc bfc" id="L146" title="All 4 branches covered.">        while (prev.get(current) != null &amp;&amp; !prev.get(current).equals(src)) {</span>
+<span class="fc" id="L147">            current = prev.get(current);</span>
+        }
+
+<span class="fc" id="L150">        return current;</span>
+    }
+
+    public Position getPreviousPosition() {
+<span class="nc bnc" id="L154" title="All 2 branches missed.">        for (Position p : prev.keySet()) {</span>
+<span class="nc bnc" id="L155" title="All 2 branches missed.">            if (prev.get(p) == null) {</span>
+<span class="nc" id="L156">                return p;</span>
+            }
+<span class="nc" id="L158">        }</span>
+<span class="nc" id="L159">        return null;</span>
+    }
+    public Map&lt;Position, Position&gt; getPreviousMap() {
+<span class="fc" id="L162">        return this.prev;</span>
+    }
+
+    public List&lt;EntityResponse&gt; drawPath(Position destination) {
+<span class="nc" id="L166">        Position dest = new Position(destination.getX(), destination.getY());</span>
+<span class="nc" id="L167">        algorithm(entity.getPosition());</span>
+
+<span class="nc" id="L169">        Position current = dest;</span>
+<span class="nc" id="L170">        List&lt;EntityResponse&gt; responses = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L171" title="All 2 branches missed.">        while (current != null) {</span>
+<span class="nc" id="L172">            responses.add(new UnimplementedEntity(new Position(current.getX(), current.getY(), -1)).getEntityResponse());</span>
+<span class="nc" id="L173">            current = prev.get(current);</span>
+        }
+<span class="nc" id="L175">        return responses;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

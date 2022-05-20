@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Entity.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project</a> &gt; <a href="index.source.html" class="el_package">dungeonmania.entities</a> &gt; <span class="el_source">Entity.java</span></div><h1>Entity.java</h1><pre class="source lang-java linenums">package dungeonmania.entities;
+
+import java.util.*;
+
+import com.google.gson.JsonObject;
+
+import dungeonmania.entities.behaviours.Interactable;
+import dungeonmania.response.models.AnimationQueue;
+import dungeonmania.response.models.EntityResponse;
+import dungeonmania.util.Direction;
+import dungeonmania.util.Position;
+
+public abstract class Entity {
+    private Position position;
+<span class="fc" id="L15">    private String id = UUID.randomUUID().toString();</span>
+    private String type;
+<span class="fc" id="L17">    protected List&lt;AnimationQueue&gt; animationBuffer = new ArrayList&lt;&gt;();</span>
+    /**
+     * Constructor for the entity class
+     * @param type
+     * @param position
+     */
+<span class="fc" id="L23">    protected Entity(String type, Position position) {</span>
+<span class="fc" id="L24">        this.position = position;</span>
+<span class="fc" id="L25">        this.type = type;</span>
+<span class="fc" id="L26">    }</span>
+
+    /**
+     * Governs the action performed by the entity when the game updates it's tick
+     */
+    public abstract void onTick();
+    
+    /**
+     * Actions enacted by this entity when a player overlaps with this entity
+     * @param entity
+     * @param dir
+     * @return true if the entity that overlaps this can move into this position
+     */
+    public abstract boolean onOverlap(Entity entity, Direction dir);
+    
+    /**
+     * Initialise the entity
+     */
+    public abstract void init();
+    
+    /**
+     * Gets the entity Response of this entity
+     * @return EntityResponse
+     */
+    public EntityResponse getEntityResponse() {
+<span class="fc" id="L51">        return new EntityResponse(id, type, position, Interactable.class.isInstance(this));</span>
+    }
+    
+    public List&lt;AnimationQueue&gt; getAnimationResponse() {
+<span class="fc" id="L55">        List&lt;AnimationQueue&gt; animationQueues = new ArrayList&lt;&gt;(animationBuffer);</span>
+<span class="fc" id="L56">        animationBuffer = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L57">        return animationQueues;</span>
+    }
+    /**
+     * @return Position return the position
+     */
+    public Position getPosition() {
+<span class="fc" id="L63">        return position;</span>
+    }
+
+    /**
+     * @param position the position to set
+     */
+    public void setPosition(Position position) {
+<span class="fc" id="L70">        this.position = position;</span>
+<span class="fc" id="L71">    }</span>
+
+    /**
+     * @return String return the id
+     */
+    public String getId() {
+<span class="fc" id="L77">        return id;</span>
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(String id) {
+<span class="nc" id="L84">        this.id = id;</span>
+<span class="nc" id="L85">    }</span>
+
+    /**
+     * @return String return the type
+     */
+    public String getType() {
+<span class="fc" id="L91">        return type;</span>
+    }
+
+    /**
+     * @param type the type to set
+     */
+    public void setType(String type) {
+<span class="nc" id="L98">        this.type = type;</span>
+<span class="nc" id="L99">    }   </span>
+
+    /**
+     * returns this entity's details in the form of an json object
+     * @return JsonObject
+     */
+    public JsonObject toJsonObject() {
+<span class="fc" id="L106">        JsonObject obj = new JsonObject();</span>
+<span class="fc" id="L107">        obj.addProperty(&quot;x&quot;, position.getX());</span>
+<span class="fc" id="L108">        obj.addProperty(&quot;y&quot;, position.getY());</span>
+<span class="fc" id="L109">        obj.addProperty(&quot;type&quot;, type);</span>
+<span class="fc" id="L110">        return obj;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

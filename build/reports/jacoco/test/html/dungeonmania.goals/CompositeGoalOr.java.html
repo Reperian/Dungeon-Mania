@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CompositeGoalOr.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project</a> &gt; <a href="index.source.html" class="el_package">dungeonmania.goals</a> &gt; <span class="el_source">CompositeGoalOr.java</span></div><h1>CompositeGoalOr.java</h1><pre class="source lang-java linenums">package dungeonmania.goals;
+
+import com.google.gson.JsonObject;
+
+public class CompositeGoalOr extends CompositeGoal {
+
+    /**
+     * Constructs a composite goal where only one sub goal need to be completed to pass the composite goal
+     */
+    public CompositeGoalOr(Goal... goals) {
+        
+<span class="fc" id="L12">        super(goals);</span>
+        
+<span class="fc" id="L14">    }</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String checkGoal() {
+        
+<span class="fc" id="L22">        String goal_string = &quot;&quot;;</span>
+
+        // generating the goal string to be returned
+
+<span class="fc bfc" id="L26" title="All 2 branches covered.">        for (Goal goal: goals) {</span>
+            
+<span class="fc bfc" id="L28" title="All 2 branches covered.">            if (goal.checkGoal().equals(&quot;&quot;)) { // if a subgoal is completed return an empty string as the composite goal has been completed</span>
+
+<span class="fc" id="L30">                return &quot;&quot;;</span>
+
+<span class="pc bpc" id="L32" title="1 of 4 branches missed.">            } else if (!goal.checkGoal().equals(&quot;&quot;) &amp;&amp; goal_string.equals(&quot;&quot;)) { // add the uncompleted subgoal to the goal string to be returned</span>
+
+<span class="fc" id="L34">                goal_string = String.format(&quot;%s&quot;, goal.checkGoal());</span>
+
+            } else { // add an 'OR' and the uncompleted subgoal to the goal string to be returned
+
+<span class="fc" id="L38">                goal_string = String.format(&quot;%s OR %s&quot;, goal_string, goal.checkGoal());</span>
+            }
+<span class="fc" id="L40">        }</span>
+
+<span class="fc" id="L42">        return goal_string;</span>
+    }
+    @Override
+    public JsonObject toJsonObject() {
+<span class="nc" id="L46">        JsonObject obj = super.toJsonObject();</span>
+<span class="nc" id="L47">        obj.addProperty(&quot;goal&quot;, &quot;OR&quot;);</span>
+<span class="nc" id="L48">        return obj;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

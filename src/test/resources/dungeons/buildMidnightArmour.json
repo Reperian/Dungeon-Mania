@@ -1,0 +1,70 @@
+{   
+  "entities": [
+    {
+      "x": 5,
+      "y": 8,
+      "type": "mercenary"
+    },
+    {
+      "x": 5,
+      "y": 8,
+      "type": "mercenary"
+    },
+    {
+      "x": 5,
+      "y": 8,
+      "type": "mercenary"
+    },
+    {
+      "x": 5,
+      "y": 6,
+      "type": "midnight_armour"
+    },
+    {
+      "x": 5,
+      "y": 6,
+      "type": "midnight_armour"
+    },
+    {
+      "x": 5,
+      "y": 5,
+      "type": "player"
+    },
+    {
+      "x": 6,
+      "y": 5,
+      "type": "sun_stone"
+    },
+    {
+      "x": 7,
+      "y": 5,
+      "type": "armour"
+    },
+    {
+      "x": 10,
+      "y": 5,
+      "type": "assassin"
+    },
+    {
+      "x": 10,
+      "y": 5,
+      "type": "assassin"
+    },
+    {
+      "x": 10,
+      "y": 5,
+      "type": "assassin"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "type": "zombie_toast_spawner"
+    }
+    
+  ],
+
+  "goal-condition": {
+      "goal": "exit"
+  }
+
+}

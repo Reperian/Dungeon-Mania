@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dungeonmania.portalTests" tests="29" skipped="0" failures="0" errors="0" timestamp="2021-11-14T12:41:51" hostname="DESKTOP-C1T19SJ" time="0.114">
+  <properties/>
+  <testcase name="testPortalFriendlyMercenaryDown()" classname="dungeonmania.portalTests" time="0.006"/>
+  <testcase name="testPortalFriendlyMercenaryLeft()" classname="dungeonmania.portalTests" time="0.005"/>
+  <testcase name="testPortalBlocked()" classname="dungeonmania.portalTests" time="0.002"/>
+  <testcase name="testPortalMercenaryUp()" classname="dungeonmania.portalTests" time="0.006"/>
+  <testcase name="testOnePortalLeftEntry()" classname="dungeonmania.portalTests" time="0.002"/>
+  <testcase name="testPortalFriendlyMercenaryRight()" classname="dungeonmania.portalTests" time="0.004"/>
+  <testcase name="testTwoPortals()" classname="dungeonmania.portalTests" time="0.002"/>
+  <testcase name="testPortalMercenaryDown()" classname="dungeonmania.portalTests" time="0.004"/>
+  <testcase name="testPortalMercenaryLeft()" classname="dungeonmania.portalTests" time="0.004"/>
+  <testcase name="testPortalAssassinDown()" classname="dungeonmania.portalTests" time="0.005"/>
+  <testcase name="testPortalAssassinLeft()" classname="dungeonmania.portalTests" time="0.004"/>
+  <testcase name="testPortalFriendlyAssassinBlocked()" classname="dungeonmania.portalTests" time="0.004"/>
+  <testcase name="testPortalAssassinUp()" classname="dungeonmania.portalTests" time="0.006"/>
+  <testcase name="testPortalSpiderNoEffect()" classname="dungeonmania.portalTests" time="0.002"/>
+  <testcase name="testPortalFriendlyMercenaryBlocked()" classname="dungeonmania.portalTests" time="0.004"/>
+  <testcase name="testOnePortalRightEntry()" classname="dungeonmania.portalTests" time="0.002"/>
+  <testcase name="testPortalFriendlyAssassinDown()" classname="dungeonmania.portalTests" time="0.005"/>
+  <testcase name="testPortalFriendlyAssassinLeft()" classname="dungeonmania.portalTests" time="0.005"/>
+  <testcase name="testPortalFriendlyAssassinUp()" classname="dungeonmania.portalTests" time="0.006"/>
+  <testcase name="testPortalAssassinBlocked()" classname="dungeonmania.portalTests" time="0.003"/>
+  <testcase name="testPortalFriendlyAssassinRight()" classname="dungeonmania.portalTests" time="0.004"/>
+  <testcase name="testPortalHydraNoEffect()" classname="dungeonmania.portalTests" time="0.002"/>
+  <testcase name="testPortalFriendlyMercenaryUp()" classname="dungeonmania.portalTests" time="0.006"/>
+  <testcase name="testPortalMercenaryBlocked()" classname="dungeonmania.portalTests" time="0.004"/>
+  <testcase name="testOnePortalDownEntry()" classname="dungeonmania.portalTests" time="0.002"/>
+  <testcase name="testPortalAssassinRight()" classname="dungeonmania.portalTests" time="0.004"/>
+  <testcase name="testOnePortalUpEntry()" classname="dungeonmania.portalTests" time="0.002"/>
+  <testcase name="testPortalZombieNoEffect()" classname="dungeonmania.portalTests" time="0.002"/>
+  <testcase name="testPortalMercenaryRight()" classname="dungeonmania.portalTests" time="0.003"/>
+  <system-out><![CDATA[5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BattleUtils.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project</a> &gt; <a href="index.source.html" class="el_package">dungeonmania.entities.moving_entities.util</a> &gt; <span class="el_source">BattleUtils.java</span></div><h1>BattleUtils.java</h1><pre class="source lang-java linenums">package dungeonmania.entities.moving_entities.util;
+
+import java.util.List;
+
+import dungeonmania.dungeon.Dungeon;
+import dungeonmania.entities.Entity;
+import dungeonmania.entities.behaviours.Battleable;
+import dungeonmania.entities.behaviours.Defence;
+import dungeonmania.entities.behaviours.EntityHealth;
+import dungeonmania.entities.behaviours.Inventory;
+import dungeonmania.entities.behaviours.Weapon;
+import dungeonmania.entities.moving_entities.FriendlyMercenary;
+import dungeonmania.entities.moving_entities.MovingEntity;
+import dungeonmania.entities.player.Player;
+import dungeonmania.entities.util.EntityUtils;
+import dungeonmania.response.models.StatResponse;
+
+
+<span class="nc" id="L19">public class BattleUtils {</span>
+    /**
+     * Checks if there is a player battle that should be occuring
+     * @param enemy
+     */
+    public static void checkBattlePlayer(Entity enemy) {
+<span class="fc" id="L25">        List&lt;Entity&gt; entities = EntityUtils.getEntitiesAtPosition(enemy.getPosition());</span>
+<span class="fc bfc" id="L26" title="All 2 branches covered.">        for (Entity e : entities) {</span>
+<span class="fc bfc" id="L27" title="All 2 branches covered.">            if (e instanceof Player) {</span>
+<span class="fc" id="L28">                ((Player) e).battle(enemy);</span>
+            }
+<span class="fc" id="L30">        }</span>
+<span class="fc" id="L31">    }</span>
+
+    private static void doBattle(Entity ally, MovingEntity enemy) {
+        // calculate stats
+<span class="fc" id="L35">        StatResponse allyStats = new StatResponse(ally, enemy);</span>
+<span class="fc" id="L36">        StatResponse enemyStats = new StatResponse(enemy, ally);</span>
+        // Do damage calculation
+<span class="fc" id="L38">        float newAllyHp = (float)allyStats.getHealth() - (((enemyStats.getHealth() * enemyStats.getDamage()) / 10f) *</span>
+<span class="fc" id="L39">                                                            allyStats.getPercentageArmour() -</span>
+<span class="fc" id="L40">                                                            allyStats.getFlatArmour());</span>
+
+<span class="fc" id="L42">        float newEnemyHp = (float)enemyStats.getHealth() - (((allyStats.getHealth() * allyStats.getDamage()) / 5f) *</span>
+<span class="fc" id="L43">                                                            enemyStats.getPercentageArmour() - </span>
+<span class="fc" id="L44">                                                            enemyStats.getFlatArmour()) * enemy.damageMultiplier();</span>
+
+
+        // Reduce durablility 
+<span class="fc" id="L48">        List&lt;Weapon&gt; allyWeapons = EntityUtils.getInventoryToTypeList(((Inventory)ally).getInventory(), Weapon.class);</span>
+<span class="fc" id="L49">        List&lt;Defence&gt; allyArmours = EntityUtils.getInventoryToTypeList(((Inventory)ally).getInventory(), Defence.class);</span>
+<span class="fc" id="L50">        List&lt;Weapon&gt; enemyWeapons = EntityUtils.getInventoryToTypeList(((Inventory)enemy).getInventory(), Weapon.class);</span>
+<span class="fc" id="L51">        List&lt;Defence&gt; enemyArmours = EntityUtils.getInventoryToTypeList(((Inventory)enemy).getInventory(), Defence.class);</span>
+<span class="fc" id="L52">        allyWeapons.stream().forEach(e-&gt;e.reduceDurability(1));</span>
+<span class="pc" id="L53">        enemyWeapons.stream().forEach(e-&gt;e.reduceDurability(1));</span>
+<span class="fc" id="L54">        allyArmours.stream().forEach(e-&gt;e.reduceDurability(enemyStats.getTotalHits()));</span>
+<span class="fc" id="L55">        enemyArmours.stream().forEach(e-&gt;e.reduceDurability(allyStats.getTotalHits()));</span>
+        // Update new hp
+<span class="fc" id="L57">        ((EntityHealth)ally).setHealth((int)newAllyHp);</span>
+<span class="fc" id="L58">        ((EntityHealth)enemy).setHealth((int)newEnemyHp);</span>
+
+<span class="fc" id="L60">    }</span>
+
+    /**
+     * Simulates the battle for all friendly mercenaries
+     * @param allies
+     * @param enemy
+     * @return
+     */
+    private static boolean doAllyBattle(List&lt;FriendlyMercenary&gt; allies, Battleable enemy) {
+<span class="fc bfc" id="L69" title="All 2 branches covered.">        for (FriendlyMercenary ally : allies) {</span>
+<span class="fc" id="L70">            doBattle(ally, (MovingEntity)enemy);</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">            if (enemy.getHealth() &lt;= 0) {</span>
+<span class="fc" id="L72">                return true;</span>
+            }
+<span class="fc" id="L74">        }</span>
+<span class="fc" id="L75">        return false;</span>
+    }
+    /**
+     * Simulates the process of player battling enemy
+     * @param enemy
+     * @return
+     */
+    public static void doPlayerBattle(Battleable enemy) {
+<span class="fc" id="L83">        Player player = Dungeon.getInstance().getPlayer();</span>
+        // Loop till somebody dies
+<span class="fc bfc" id="L85" title="All 4 branches covered.">        while (player.getHealth() &gt; 0 &amp;&amp; enemy.getHealth() &gt; 0) {</span>
+            // Leaves battle if ally kills enemy
+<span class="fc bfc" id="L87" title="All 2 branches covered.">            if (doAllyBattle(player.getAllyList(), enemy)) {</span>
+<span class="fc" id="L88">                return;</span>
+            }
+<span class="fc" id="L90">            doBattle(player, (MovingEntity)enemy);</span>
+        }
+<span class="fc" id="L92">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

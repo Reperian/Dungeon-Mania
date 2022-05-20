@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GoalLoader.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project</a> &gt; <a href="index.source.html" class="el_package">dungeonmania.dungeon.util</a> &gt; <span class="el_source">GoalLoader.java</span></div><h1>GoalLoader.java</h1><pre class="source lang-java linenums">package dungeonmania.dungeon.util;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
+import dungeonmania.goals.BouldersGoal;
+import dungeonmania.goals.CompositeGoal;
+import dungeonmania.goals.CompositeGoalAnd;
+import dungeonmania.goals.CompositeGoalOr;
+import dungeonmania.goals.EnemiesGoal;
+import dungeonmania.goals.ExitGoal;
+import dungeonmania.goals.Goal;
+import dungeonmania.goals.TreasureGoal;
+
+<span class="nc" id="L16">public class GoalLoader {</span>
+    /**
+     * @precondition type must be valid
+     * @param type
+     * @return
+     */
+    public static Goal goalFactory(String type) {
+<span class="pc bpc" id="L23" title="1 of 7 branches missed.">        switch (type) {</span>
+            case &quot;AND&quot;:
+<span class="fc" id="L25">                return new CompositeGoalAnd();</span>
+            case &quot;OR&quot;:
+<span class="fc" id="L27">                return new CompositeGoalOr();</span>
+            case &quot;treasure&quot;:
+<span class="fc" id="L29">                return new TreasureGoal();</span>
+            case &quot;enemies&quot;:
+<span class="fc" id="L31">                return new EnemiesGoal();</span>
+            case &quot;boulders&quot;:
+<span class="fc" id="L33">                return new BouldersGoal();</span>
+            case &quot;exit&quot;:
+<span class="fc" id="L35">                return new ExitGoal();</span>
+        }
+<span class="nc" id="L37">        return null;</span>
+    }
+    
+    /**
+     * Recursively loads all goals as a composite object
+     * @param parent
+     * @param goal
+     * @param subgoals
+     * @return
+     */
+    public static Goal loadGoal(Goal parent, JsonElement goal, JsonElement subgoals) {
+<span class="fc" id="L48">        String goalString = goal.getAsString();</span>
+        // check if not leaf node
+<span class="fc bfc" id="L50" title="All 2 branches covered.">        if (subgoals != null) {</span>
+            // Get subgoal array and relevant composite goal from the goal factory
+<span class="fc" id="L52">            JsonArray subgoalsArray = subgoals.getAsJsonArray();</span>
+<span class="fc" id="L53">            CompositeGoal compositeGoal = (CompositeGoal) goalFactory(goalString);</span>
+            // Adds child nodes to that composite goal via recursion
+<span class="fc bfc" id="L55" title="All 2 branches covered.">            for (JsonElement element : subgoalsArray) {</span>
+<span class="fc" id="L56">                JsonObject jsonObject = element.getAsJsonObject();</span>
+<span class="fc" id="L57">                compositeGoal.addGoal(loadGoal(compositeGoal, jsonObject.get(&quot;goal&quot;), jsonObject.get(&quot;subgoals&quot;)));</span>
+<span class="fc" id="L58">            }</span>
+<span class="fc" id="L59">            return compositeGoal;</span>
+        }
+<span class="fc" id="L61">        return goalFactory(goalString);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

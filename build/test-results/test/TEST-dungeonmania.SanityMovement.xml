@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dungeonmania.SanityMovement" tests="4" skipped="0" failures="0" errors="0" timestamp="2021-11-14T12:41:51" hostname="DESKTOP-C1T19SJ" time="0.01">
+  <properties/>
+  <testcase name="testMovementUp()" classname="dungeonmania.SanityMovement" time="0.004"/>
+  <testcase name="testMovementRight()" classname="dungeonmania.SanityMovement" time="0.002"/>
+  <testcase name="testMovementDown()" classname="dungeonmania.SanityMovement" time="0.002"/>
+  <testcase name="testMovementLeft()" classname="dungeonmania.SanityMovement" time="0.002"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

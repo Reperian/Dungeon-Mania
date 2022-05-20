@@ -1,0 +1,27 @@
+{ 
+    "entities": [
+      {
+        "x": 10,
+        "y": 10,
+        "type": "player"
+      },
+      {
+        "x": 9,
+        "y": 10,
+        "type": "boulder"
+      },
+      {
+        "x": 9,
+        "y": 9,
+        "type": "boulder"
+      },
+      {
+        "x": 10,
+        "y": 9,
+        "type": "boulder"
+      }
+    ],
+    "goal-condition": {
+    "goal": "treasure"
+  }
+}

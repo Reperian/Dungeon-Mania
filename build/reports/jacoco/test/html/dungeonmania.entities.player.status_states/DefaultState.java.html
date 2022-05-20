@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DefaultState.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project</a> &gt; <a href="index.source.html" class="el_package">dungeonmania.entities.player.status_states</a> &gt; <span class="el_source">DefaultState.java</span></div><h1>DefaultState.java</h1><pre class="source lang-java linenums">package dungeonmania.entities.player.status_states;
+
+import java.util.List;
+
+import dungeonmania.dungeon.Dungeon;
+import dungeonmania.entities.behaviours.Battleable;
+import dungeonmania.entities.moving_entities.MovingEntity;
+import dungeonmania.entities.player.Player;
+import dungeonmania.entities.util.EntityUtils;
+import dungeonmania.movement.StuckMovement;
+
+public class DefaultState extends StatusState{
+
+<span class="fc" id="L14">    public DefaultState() {}</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onTransition() {
+<span class="fc" id="L21">        Player player = Dungeon.getInstance().getPlayer();</span>
+<span class="fc" id="L22">        player.setBattleStrategy(Player.getDefaultBattleStrategy());</span>
+        // Sets all enemies movement strategy to default movements
+<span class="fc" id="L24">        List&lt;Battleable&gt; enemies = EntityUtils.getEntitiesToTypeList(Dungeon.getInstance().getEntities(), Battleable.class);</span>
+<span class="fc bfc" id="L25" title="All 2 branches covered.">        for (Battleable enemy : enemies) {</span>
+<span class="fc bfc" id="L26" title="All 2 branches covered.">            if (!(((MovingEntity)enemy).getMovementStrategy() instanceof StuckMovement)) {</span>
+<span class="fc" id="L27">                ((MovingEntity)enemy).setMovementStrategy(((MovingEntity)enemy).getDefaultMovementStrategy());</span>
+            }
+<span class="fc" id="L29">        }</span>
+
+<span class="fc" id="L31">    }</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void nextState(){
+<span class="fc" id="L38">        onTransition();</span>
+<span class="fc" id="L39">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

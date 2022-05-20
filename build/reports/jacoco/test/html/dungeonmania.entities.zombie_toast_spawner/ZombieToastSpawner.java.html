@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ZombieToastSpawner.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project</a> &gt; <a href="index.source.html" class="el_package">dungeonmania.entities.zombie_toast_spawner</a> &gt; <span class="el_source">ZombieToastSpawner.java</span></div><h1>ZombieToastSpawner.java</h1><pre class="source lang-java linenums">package dungeonmania.entities.zombie_toast_spawner;
+
+import dungeonmania.dungeon.Dungeon;
+import dungeonmania.entities.Entity;
+import dungeonmania.entities.armour.Armour;
+import dungeonmania.entities.behaviours.Collectable;
+import dungeonmania.entities.behaviours.Interactable;
+import dungeonmania.entities.bow.Bow;
+import dungeonmania.entities.sword.Sword;
+import dungeonmania.entities.util.EntityUtils;
+import dungeonmania.response.models.AnimationQueue;
+import dungeonmania.entities.moving_entities.ZombieToast;
+import dungeonmania.util.Direction;
+import dungeonmania.util.Position;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
+
+public abstract class ZombieToastSpawner extends Entity implements Interactable {
+    private static final String TYPE = &quot;zombie_toast_spawner&quot;;
+    private static final float ARMOUR_PERCENTAGE = 0.07f;
+<span class="fc" id="L25">    private boolean alternate = false;</span>
+    /**
+     * Constructor for a ZombieToastSpawner
+     * @param position
+     */
+    public ZombieToastSpawner(Position position) {
+<span class="fc" id="L31">        super(TYPE, position);</span>
+<span class="fc" id="L32">    }</span>
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean onOverlap(Entity entity, Direction dir) {
+<span class="fc" id="L38">        return false;         </span>
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean interact() {
+<span class="fc" id="L47">        return destroy();</span>
+    }
+
+    /**
+     * Destroys the zombieToastSpawner if th eplayer has a weapon (Bow or Shield)
+     * @return boolean true if the spawner is destroyed or not
+     */
+    private boolean destroy(){
+        
+<span class="fc" id="L56">        List&lt;Collectable&gt; inventory = Dungeon.getInstance().getPlayer().getInventory();</span>
+<span class="pc bpc" id="L57" title="3 of 4 branches missed.">        List&lt;Collectable&gt; weapons = inventory.stream().filter(c -&gt; (c instanceof Sword || c instanceof Bow)).collect(Collectors.toList());</span>
+
+<span class="fc bfc" id="L59" title="All 2 branches covered.">        if (weapons.size() &gt; 0) {</span>
+<span class="fc" id="L60">            Dungeon.getInstance().removeEntity(this);</span>
+<span class="fc" id="L61">            return true;</span>
+        }
+
+<span class="fc" id="L64">        return false;</span>
+    }
+    private Position getSuitableSpawningPosition() {
+<span class="fc" id="L67">        Random rand = Dungeon.getInstance().getRandom();</span>
+<span class="fc" id="L68">        List&lt;Position&gt; allPositions = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">        for (Position pos : getPosition().getAdjacentFour()){</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">            if (EntityUtils.getEntitiesAtPosition(pos).size() == 0) {</span>
+<span class="fc" id="L71">                allPositions.add(pos);</span>
+            }
+<span class="fc" id="L73">        }</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">        if (allPositions.size() == 0) {</span>
+<span class="fc" id="L75">            return null;</span>
+        }
+<span class="fc" id="L77">        return allPositions.get(rand.nextInt(allPositions.size()));</span>
+    }
+    /**
+     * Spawns a zombie toast
+     */
+    protected void spawnZombieToast() {
+<span class="fc" id="L83">        Position spawnPos = getSuitableSpawningPosition();</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">        if (spawnPos == null) {</span>
+<span class="fc" id="L85">            return;</span>
+        }
+<span class="fc" id="L87">        ZombieToast z = new ZombieToast(spawnPos);</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">        if (Dungeon.getInstance().getRandom().nextFloat() &lt; ARMOUR_PERCENTAGE) {</span>
+<span class="fc" id="L89">            System.out.println(&quot;Spawning a Zombie without armour&quot;);</span>
+<span class="fc" id="L90">            z.getInventory().add(new Armour(getPosition()));</span>
+        }
+<span class="fc" id="L92">        Dungeon.getInstance().addEntity(z);</span>
+<span class="fc" id="L93">    }</span>
+
+    @Override
+    public List&lt;AnimationQueue&gt; getAnimationResponse() {
+<span class="fc bfc" id="L97" title="All 2 branches covered.">        alternate = !alternate;</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">        if (alternate) {</span>
+<span class="fc" id="L99">            animationBuffer.add(new AnimationQueue(&quot;PostTick&quot;, getId(), Arrays.asList(&quot;sprite zombie_toast_spawner&quot;), false, -1));</span>
+        }
+        else {
+<span class="fc" id="L102">            animationBuffer.add(new AnimationQueue(&quot;PostTick&quot;, getId(), Arrays.asList(&quot;sprite zombie_toast_spawner_on&quot;), false, -1));</span>
+        }
+<span class="fc" id="L104">        return super.getAnimationResponse();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

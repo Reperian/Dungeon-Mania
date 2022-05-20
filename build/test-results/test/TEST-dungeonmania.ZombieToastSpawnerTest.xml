@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dungeonmania.ZombieToastSpawnerTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2021-11-14T12:41:52" hostname="DESKTOP-C1T19SJ" time="0.021">
+  <properties/>
+  <testcase name="testPlayerDestroysSpawner()" classname="dungeonmania.ZombieToastSpawnerTest" time="0.002"/>
+  <testcase name="testSpawnTickCountPeaceful()" classname="dungeonmania.ZombieToastSpawnerTest" time="0.003"/>
+  <testcase name="testSpawnLocation()" classname="dungeonmania.ZombieToastSpawnerTest" time="0.003"/>
+  <testcase name="testZombieSpawnWithArmour()" classname="dungeonmania.ZombieToastSpawnerTest" time="0.004"/>
+  <testcase name="testSpawnTickCountStandard()" classname="dungeonmania.ZombieToastSpawnerTest" time="0.002"/>
+  <testcase name="testSpawnTickCountHard()" classname="dungeonmania.ZombieToastSpawnerTest" time="0.002"/>
+  <testcase name="testPlayerIsNotAdjacent()" classname="dungeonmania.ZombieToastSpawnerTest" time="0.002"/>
+  <testcase name="testPlayerHasNoWeapon()" classname="dungeonmania.ZombieToastSpawnerTest" time="0.002"/>
+  <system-out><![CDATA[Spawning a Zombie without armour
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dungeonmania.BuildableEntities2Tests" tests="13" skipped="0" failures="0" errors="0" timestamp="2021-11-14T12:41:50" hostname="DESKTOP-C1T19SJ" time="0.7">
+  <properties/>
+  <testcase name="testSceptreBribeMercenary()" classname="dungeonmania.BuildableEntities2Tests" time="0.109"/>
+  <testcase name="testBuildMidnightArmour()" classname="dungeonmania.BuildableEntities2Tests" time="0.035"/>
+  <testcase name="testBattleWithMidnightArmour()" classname="dungeonmania.BuildableEntities2Tests" time="0.044"/>
+  <testcase name="testInsufficientItems()" classname="dungeonmania.BuildableEntities2Tests" time="0.004"/>
+  <testcase name="testCollectMidnightArmour()" classname="dungeonmania.BuildableEntities2Tests" time="0.019"/>
+  <testcase name="testMidnightArmourDurability()" classname="dungeonmania.BuildableEntities2Tests" time="0.037"/>
+  <testcase name="testBuildSceptre1()" classname="dungeonmania.BuildableEntities2Tests" time="0.032"/>
+  <testcase name="testBuildSceptre2()" classname="dungeonmania.BuildableEntities2Tests" time="0.032"/>
+  <testcase name="testBuildSceptre3()" classname="dungeonmania.BuildableEntities2Tests" time="0.037"/>
+  <testcase name="testBuildSceptre4()" classname="dungeonmania.BuildableEntities2Tests" time="0.036"/>
+  <testcase name="testCollectSceptre()" classname="dungeonmania.BuildableEntities2Tests" time="0.041"/>
+  <testcase name="testZombiesPresentMidnightArmour()" classname="dungeonmania.BuildableEntities2Tests" time="0.171"/>
+  <testcase name="testSceptreBribeAssassin()" classname="dungeonmania.BuildableEntities2Tests" time="0.097"/>
+  <system-out><![CDATA[5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

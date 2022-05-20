@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Sceptre.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project</a> &gt; <a href="index.source.html" class="el_package">dungeonmania.entities.sceptre</a> &gt; <span class="el_source">Sceptre.java</span></div><h1>Sceptre.java</h1><pre class="source lang-java linenums">package dungeonmania.entities.sceptre;
+
+import java.util.List;
+
+import dungeonmania.dungeon.Dungeon;
+import dungeonmania.entities.Entity;
+import dungeonmania.entities.arrows.Arrows;
+import dungeonmania.entities.behaviours.Buildable;
+import dungeonmania.entities.behaviours.Collectable;
+import dungeonmania.entities.key.Key;
+import dungeonmania.entities.player.Player;
+import dungeonmania.entities.sunstone.SunStone;
+import dungeonmania.entities.treasure.Treasure;
+import dungeonmania.entities.util.EntityUtils;
+import dungeonmania.entities.wood.Wood;
+import dungeonmania.exceptions.InvalidActionException;
+import dungeonmania.response.models.ItemResponse;
+import dungeonmania.util.Direction;
+import dungeonmania.util.Position;
+
+public class Sceptre extends Entity implements Collectable, Buildable {
+    
+    private static final String TYPE = &quot;sceptre&quot;;
+
+    /**
+     * Constructs a sceptre if a sceptre can be built from items in the player's inventory
+     */
+    public Sceptre() {
+<span class="fc" id="L29">        super(TYPE, new Position(0,0));</span>
+<span class="fc" id="L30">        build();</span>
+<span class="fc" id="L31">    }</span>
+
+    /**
+     * Constructs a sceptre, no need to check the player's inventory as this is only used when the sceptre is loaded from a json map
+     * @param position position the sceptre is spawned at on the map
+     */
+    public Sceptre(Position position) {
+<span class="fc" id="L38">        super(TYPE, position);</span>
+<span class="fc" id="L39">    }</span>
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+<span class="fc" id="L45">    public void onTick() {}</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean onOverlap(Entity entity, Direction dir) {
+<span class="fc" id="L52">        return collect();         </span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean collect() {
+<span class="fc" id="L60">        Dungeon.getInstance().getPlayer().addItemToInventory(this);</span>
+<span class="fc" id="L61">        Dungeon.getInstance().removeEntity(this);</span>
+<span class="fc" id="L62">        return true;</span>
+    }
+
+    /**
+     * Builds the sceptre if the player has sufficient items to build it by removing recipe items from the player's inventory
+     * @throws InvalidActionException if there aren't enough Collectables to build the bos
+     */
+    public void build() throws InvalidActionException {
+
+<span class="fc" id="L71">        Player p = Dungeon.getInstance().getPlayer();</span>
+
+<span class="fc bfc" id="L73" title="All 2 branches covered.">        if (isBuildable()) {</span>
+
+<span class="fc" id="L75">            List&lt;Collectable&gt; inventory = p.getInventory();</span>
+
+<span class="fc" id="L77">            int numWood = EntityUtils.getEntitiesFromInventory(inventory, Wood.class).size();</span>
+<span class="fc" id="L78">            int numKey = EntityUtils.getEntitiesFromInventory(inventory, Key.class).size();</span>
+
+<span class="fc bfc" id="L80" title="All 2 branches covered.">            if (numWood &gt;= 1) {</span>
+
+<span class="fc" id="L82">                p.removeNumOfTypeFromInventory(1, Wood.class);</span>
+
+            } else {
+
+<span class="fc" id="L86">                p.removeNumOfTypeFromInventory(2, Arrows.class);</span>
+                
+            }
+
+<span class="fc bfc" id="L90" title="All 2 branches covered.">            if (numKey &gt;= 1) {</span>
+
+<span class="fc" id="L92">                p.removeNumOfTypeFromInventory(1, Key.class);</span>
+
+            } else {
+
+<span class="fc" id="L96">                p.removeNumOfTypeFromInventory(1, Treasure.class);</span>
+
+            }
+
+<span class="fc" id="L100">            p.removeNumOfTypeFromInventory(1, SunStone.class);</span>
+
+<span class="fc" id="L102">        } else {</span>
+<span class="fc" id="L103">            throw new InvalidActionException(&quot;Insufficient Items to build Sceptre&quot;);</span>
+        }
+
+<span class="fc" id="L106">    }</span>
+    
+    /**
+     * Checks if a sceptre is buildable from the items in the player's inventory
+     * @return whether or not a sceptre is buildable
+     */
+    public static boolean isBuildable() {
+
+<span class="fc" id="L114">        Dungeon dungeon = Dungeon.getInstance();</span>
+<span class="fc" id="L115">        Player player = dungeon.getPlayer();</span>
+<span class="fc" id="L116">        List&lt;Collectable&gt; inventory = player.getInventory();</span>
+
+<span class="fc" id="L118">        int numWood = EntityUtils.getEntitiesFromInventory(inventory, Wood.class).size();</span>
+<span class="fc" id="L119">        int numArrows = EntityUtils.getEntitiesFromInventory(inventory, Arrows.class).size();</span>
+<span class="fc" id="L120">        int numKey = EntityUtils.getEntitiesFromInventory(inventory, Key.class).size();</span>
+<span class="fc" id="L121">        int numTreasure = EntityUtils.getEntitiesFromInventory(inventory, Treasure.class).size();</span>
+<span class="fc" id="L122">        int numSunStone = EntityUtils.getEntitiesFromInventory(inventory, SunStone.class).size();</span>
+
+<span class="fc bfc" id="L124" title="All 10 branches covered.">        return (numWood &gt;= 1 || numArrows &gt;= 2) &amp;&amp; (numKey &gt;= 1 || numTreasure &gt;= 1) &amp;&amp; numSunStone &gt;= 1;</span>
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ItemResponse getItemResponse() {
+<span class="fc" id="L133">        return new ItemResponse(getId(), getType());</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+<span class="fc" id="L140">    public void init() {}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

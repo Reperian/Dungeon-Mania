@@ -1,0 +1,27 @@
+{
+    "entities": [
+      {
+        "x": 0,
+        "y": 0,
+        "type": "player"
+      },
+      {
+        "x": 1,
+        "y": 0,
+        "type": "treasure"
+      },
+      {
+        "x": 5,
+        "y": 0,
+        "type": "assassin"
+      },
+      {
+        "x": 2,
+        "y": 0,
+        "type": "the_one_ring"
+      }
+    ],
+    "goal-condition": {
+        "goal": "exit"
+    }
+}

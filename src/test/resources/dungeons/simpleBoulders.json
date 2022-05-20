@@ -1,0 +1,35 @@
+{   
+    "entities": [
+      {
+        "x": 5,
+        "y": 5,
+        "type": "player"
+      },
+      {
+        "x": 6,
+        "y": 5,
+        "type": "boulder"
+      },
+      {
+        "x": 7,
+        "y": 5,
+        "type": "switch"
+      },
+      {
+        "x": 6,
+        "y": 6,
+        "type": "boulder"
+      },
+      {
+        "x": 6,
+        "y": 7,
+        "type": "switch"
+      }
+
+    ],
+
+    "goal-condition": {
+        "goal": "boulders"
+    }
+
+}

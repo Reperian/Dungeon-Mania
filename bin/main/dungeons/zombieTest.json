@@ -1,0 +1,34 @@
+{ 
+    "width": 10,
+    "height": 10,
+    "entities": [
+      {
+        "x": 0,
+        "y": 0,
+        "type": "player"
+      },
+      {
+        "x": 5,
+        "y": 5,
+        "type": "zombie_toast"
+      },
+      {
+        "x": 5,
+        "y": 4,
+        "type": "wall"
+      },
+      {
+        "x": 5,
+        "y": 6,
+        "type": "wall"
+      },
+      {
+        "x": 4,
+        "y": 5,
+        "type": "wall"
+      }
+    ],
+    "goal-condition": {
+      "goal": "exit"
+    }
+}

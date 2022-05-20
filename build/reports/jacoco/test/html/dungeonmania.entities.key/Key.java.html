@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Key.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project</a> &gt; <a href="index.source.html" class="el_package">dungeonmania.entities.key</a> &gt; <span class="el_source">Key.java</span></div><h1>Key.java</h1><pre class="source lang-java linenums">package dungeonmania.entities.key;
+
+import java.util.List;
+
+import com.google.gson.JsonObject;
+
+import dungeonmania.dungeon.Dungeon;
+import dungeonmania.entities.Entity;
+import dungeonmania.entities.behaviours.Collectable;
+import dungeonmania.entities.player.Player;
+import dungeonmania.entities.util.EntityUtils;
+import dungeonmania.response.models.ItemResponse;
+import dungeonmania.util.Direction;
+import dungeonmania.util.Position;
+
+public class Key extends Entity implements Collectable {
+    private static final String TYPE = &quot;key&quot;;
+
+    private int keyId;
+
+    /**
+     * Constructor for the key
+     * @param position
+     * @param keyId
+     */
+    public Key(Position position, int keyId) {
+<span class="fc" id="L27">        super(TYPE + &quot;_&quot; + String.valueOf(keyId), position);</span>
+<span class="fc" id="L28">        this.keyId = keyId;</span>
+<span class="fc" id="L29">    }</span>
+
+    /**
+     * Call the key's ID
+     * @return key ID
+     */
+    public int getKeyId() {
+<span class="fc" id="L36">        return keyId;</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public JsonObject toJsonObject() {
+<span class="fc" id="L44">        JsonObject obj = new JsonObject();</span>
+<span class="fc" id="L45">        obj.addProperty(&quot;x&quot;, getPosition().getX());</span>
+<span class="fc" id="L46">        obj.addProperty(&quot;y&quot;, getPosition().getY());</span>
+<span class="fc" id="L47">        obj.addProperty(&quot;type&quot;, TYPE);</span>
+<span class="fc" id="L48">        obj.addProperty(&quot;key&quot;, keyId);</span>
+<span class="fc" id="L49">        return obj;</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+<span class="fc" id="L56">    public void onTick() {}</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean onOverlap(Entity entity, Direction dir) {
+<span class="fc" id="L63">        return collect();         </span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean collect() {
+        // Call the player
+<span class="fc" id="L72">        Player player = Dungeon.getInstance().getPlayer();</span>
+        // Call the list of keys that are collected into the player's inventory
+<span class="fc" id="L74">        List&lt;Collectable&gt; keysCollected = EntityUtils.getCollectablesFromInventory(player.getInventory(), Key.class);</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">        if (keysCollected.size() &gt; 0) { </span>
+<span class="fc" id="L76">            return true;</span>
+        }
+<span class="fc" id="L78">        player.addItemToInventory(this);</span>
+<span class="fc" id="L79">        Dungeon.getInstance().removeEntity(this);</span>
+        
+<span class="fc" id="L81">        return true;</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ItemResponse getItemResponse() {
+<span class="fc" id="L89">        return new ItemResponse(getId(), getType());</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+<span class="fc" id="L96">    public void init() {}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

@@ -1,0 +1,43 @@
+
+{
+    "width": 20,
+    "height": 4,
+    "entities": [
+      {
+        "x": 0,
+        "y": 1,
+        "type": "portal",
+        "colour": "BLUE"
+      },
+      {
+        "x": 0,
+        "y": 0,
+        "type": "portal",
+        "colour": "BLUE"
+      },
+      {
+        "x": 1,
+        "y": 1,
+        "type": "door_unlocked",
+        "key" : 1
+      },
+      {
+        "x": 1,
+        "y": 0,
+        "type": "switch"
+      },
+      {
+        "x": 0,
+        "y": 2,
+        "type": "boulder"
+      },
+      {
+        "x": 0,
+        "y": 3,
+        "type": "player"
+      }
+    ],
+    "goal-condition": {
+      "goal": "exit"
+    }
+  }

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dungeonmania.GoalsTest" tests="15" skipped="0" failures="0" errors="0" timestamp="2021-11-14T12:41:51" hostname="DESKTOP-C1T19SJ" time="0.062">
+  <properties/>
+  <testcase name="testSimpleExit()" classname="dungeonmania.GoalsTest" time="0.003"/>
+  <testcase name="testSimpleEnemies()" classname="dungeonmania.GoalsTest" time="0.002"/>
+  <testcase name="testCompositeEnemiesOrBoulders1()" classname="dungeonmania.GoalsTest" time="0.003"/>
+  <testcase name="testCompositeEnemiesOrBoulders2()" classname="dungeonmania.GoalsTest" time="0.005"/>
+  <testcase name="testCompositeFourAndGoals()" classname="dungeonmania.GoalsTest" time="0.006"/>
+  <testcase name="testCompositeFourOrGoals1()" classname="dungeonmania.GoalsTest" time="0.004"/>
+  <testcase name="testCompositeFourOrGoals2()" classname="dungeonmania.GoalsTest" time="0.005"/>
+  <testcase name="testCompositeFourOrGoals3()" classname="dungeonmania.GoalsTest" time="0.005"/>
+  <testcase name="testCompositeFourOrGoals4()" classname="dungeonmania.GoalsTest" time="0.005"/>
+  <testcase name="testCompositeTreasureAndExit()" classname="dungeonmania.GoalsTest" time="0.003"/>
+  <testcase name="testSimpleTreasure()" classname="dungeonmania.GoalsTest" time="0.003"/>
+  <testcase name="testCompositeExitandEnemiesandBoulders()" classname="dungeonmania.GoalsTest" time="0.004"/>
+  <testcase name="testCompositeExitandEnemiesOrBoulders1()" classname="dungeonmania.GoalsTest" time="0.004"/>
+  <testcase name="testCompositeExitandEnemiesOrBoulders2()" classname="dungeonmania.GoalsTest" time="0.002"/>
+  <testcase name="testSimpleBoulders()" classname="dungeonmania.GoalsTest" time="0.003"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

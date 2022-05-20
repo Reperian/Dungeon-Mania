@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Anduril.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project</a> &gt; <a href="index.source.html" class="el_package">dungeonmania.entities.anduril</a> &gt; <span class="el_source">Anduril.java</span></div><h1>Anduril.java</h1><pre class="source lang-java linenums">package dungeonmania.entities.anduril;
+
+import dungeonmania.dungeon.Dungeon;
+import dungeonmania.entities.Entity;
+import dungeonmania.entities.behaviours.Collectable;
+import dungeonmania.entities.behaviours.Weapon;
+import dungeonmania.entities.moving_entities.Assassin;
+import dungeonmania.entities.moving_entities.Hydra;
+import dungeonmania.response.models.ItemResponse;
+import dungeonmania.util.Direction;
+import dungeonmania.util.Position;
+
+//The mighty sword once wielded by the legendary hero Andurius. It has been said to be forged from the flesh of un-countable sacrificed zombie toasts. It has the power to seal the regenerative powers of the hydras.
+//It now sits inside a dungeon with a 10% drop rate, awaiting the return of a hero worthy enough to wield it's power once more and rid the land of the evil hydras.
+public class Anduril extends Entity implements Collectable, Weapon  {
+    private static final String TYPE = &quot;anduril&quot;;
+    public static final float DAMAGE = 2;
+    public static final int HIT_MULTIPLIER = 1;
+    public static final int MAGIC_POWER = 3;
+
+    /**
+     * Constructor for an anduril
+     * @param position
+     */
+    public Anduril(Position position) {
+<span class="fc" id="L26">        super(TYPE, position);</span>
+<span class="fc" id="L27">    }</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ItemResponse getItemResponse() {
+<span class="fc" id="L34">        return new ItemResponse(getId(), getType());</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean collect() {
+<span class="fc" id="L42">        Dungeon.getInstance().getPlayer().addItemToInventory(this);</span>
+<span class="fc" id="L43">        Dungeon.getInstance().removeEntity(this);</span>
+<span class="fc" id="L44">        return true;</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+<span class="fc" id="L51">    public void onTick() {}</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean onOverlap(Entity entity, Direction dir) {
+<span class="fc" id="L58">        return collect();</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+<span class="fc" id="L65">    public void init() {}</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+<span class="fc" id="L71">    public void reduceDurability(int amount) {}</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public float getDamage() {
+<span class="fc" id="L78">        return DAMAGE;</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getHitMultiplier() {
+<span class="fc" id="L86">        return HIT_MULTIPLIER;</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getEntityTypeMultiplier(Entity entity) {
+<span class="pc bpc" id="L94" title="1 of 4 branches missed.">        if (entity instanceof Hydra || entity instanceof Assassin) {</span>
+<span class="fc" id="L95">            return MAGIC_POWER;</span>
+        }
+<span class="nc" id="L97">        return 1;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

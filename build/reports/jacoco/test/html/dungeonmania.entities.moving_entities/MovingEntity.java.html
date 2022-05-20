@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MovingEntity.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project</a> &gt; <a href="index.source.html" class="el_package">dungeonmania.entities.moving_entities</a> &gt; <span class="el_source">MovingEntity.java</span></div><h1>MovingEntity.java</h1><pre class="source lang-java linenums">package dungeonmania.entities.moving_entities;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import com.google.gson.JsonObject;
+
+import dungeonmania.dungeon.Dungeon;
+import dungeonmania.dungeon.util.InventorySaver;
+import dungeonmania.entities.Entity;
+import dungeonmania.entities.behaviours.Collectable;
+import dungeonmania.entities.behaviours.Inventory;
+import dungeonmania.movement.MovementStrategy;
+import dungeonmania.response.models.AnimationQueue;
+import dungeonmania.util.Direction;
+import dungeonmania.util.Position;
+
+public abstract class MovingEntity extends Entity implements Inventory{
+    private int health;
+    private int damage;
+<span class="fc" id="L22">    private List&lt;Collectable&gt; inventory = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L23">    private Direction moved = Direction.NONE;</span>
+    protected MovementStrategy movement;
+    protected MovementStrategy defaultMovement;
+    protected MovingEntity(String type, Position position) {
+<span class="fc" id="L27">        super(type, position);</span>
+<span class="fc" id="L28">    }</span>
+    
+    /**
+     * @return int return the health
+     */
+    public int getHealth() {
+<span class="fc" id="L34">        return health;</span>
+    }
+
+    /**
+     * @param health the health to set
+     */
+    public void setHealth(int health) {
+<span class="fc" id="L41">        this.health = health;</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">        if (getHealth() &lt;= 0) {</span>
+<span class="fc" id="L43">            onDeath();</span>
+        }
+<span class="fc" id="L45">    }</span>
+    
+    /**
+     * @return int return the damage dealt by this entity
+     */
+    public int getDamage() {
+<span class="fc" id="L51">        return damage;</span>
+    }
+    
+    /**
+     * @param damage the damage to set
+     */
+    public void setDamage(int damage) {
+<span class="fc" id="L58">        this.damage = damage;</span>
+<span class="fc" id="L59">    }</span>
+    /**
+     * @return List&lt;Collectable&gt; return the inventory
+     */
+    @Override
+    public List&lt;Collectable&gt; getInventory() {
+<span class="fc" id="L65">        return inventory;</span>
+    }
+    
+    /**
+     * @param inventory the inventory to set
+     */
+    public void setInventory(List&lt;Collectable&gt; inventory) {
+<span class="fc" id="L72">        this.inventory = inventory;</span>
+<span class="fc" id="L73">    }</span>
+    /**
+     * The action performed on death of this entity.
+     * By default it will drop all items in inventory on its death location
+     */
+    public void onDeath() {
+<span class="fc" id="L79">        Dungeon.getInstance().getPlayer().getInventory().addAll(inventory);</span>
+<span class="fc" id="L80">        Dungeon.getInstance().getEntities().remove(this);</span>
+<span class="fc" id="L81">    }</span>
+
+    public float damageMultiplier() {
+<span class="fc" id="L84">        return 1;</span>
+    }
+
+    public MovementStrategy getMovementStrategy() {
+<span class="fc" id="L88">        return movement;</span>
+    }
+
+    public void setMovementStrategy(MovementStrategy movement) {
+<span class="fc" id="L92">        this.movement = movement;</span>
+<span class="fc" id="L93">    }</span>
+    
+    public MovementStrategy getDefaultMovementStrategy() {
+<span class="fc" id="L96">        return defaultMovement;</span>
+    }
+    @Override
+    public JsonObject toJsonObject(){
+<span class="fc" id="L100">        JsonObject obj = super.toJsonObject();</span>
+<span class="fc" id="L101">        obj.add(&quot;inventory&quot;, InventorySaver.inventoryToJsonArray(inventory));</span>
+<span class="fc" id="L102">        return obj;</span>
+    }
+    
+    @Override
+    public List&lt;AnimationQueue&gt; getAnimationResponse() {
+<span class="fc bfc" id="L107" title="All 2 branches covered.">        if (moved == Direction.RIGHT) {</span>
+<span class="fc" id="L108">            animationBuffer.add(new AnimationQueue(&quot;PostTick&quot;, getId(), Arrays.asList(&quot;translate-x -1&quot;, &quot;translate-x 1, over 0.5s&quot;), false, -1));</span>
+        }
+<span class="fc bfc" id="L110" title="All 2 branches covered.">        if (moved == Direction.DOWN) {</span>
+<span class="fc" id="L111">            animationBuffer.add(new AnimationQueue(&quot;PostTick&quot;, getId(), Arrays.asList(&quot;translate-y -1&quot;, &quot;translate-y 1, over 0.5s&quot;), false, -1));</span>
+        }
+<span class="fc bfc" id="L113" title="All 2 branches covered.">        if (moved == Direction.LEFT) {</span>
+<span class="fc" id="L114">            animationBuffer.add(new AnimationQueue(&quot;PostTick&quot;, getId(), Arrays.asList(&quot;translate-x 1&quot;, &quot;translate-x -1, over 0.5s&quot;), false, -1));</span>
+        }
+<span class="fc bfc" id="L116" title="All 2 branches covered.">        if (moved == Direction.UP) {</span>
+<span class="fc" id="L117">            animationBuffer.add(new AnimationQueue(&quot;PostTick&quot;, getId(), Arrays.asList(&quot;translate-y 1&quot;, &quot;translate-y -1, over 0.5s&quot;), false, -1));</span>
+        }
+<span class="fc" id="L119">        return super.getAnimationResponse();</span>
+    }
+
+    public void setMoved(Direction direction) {
+<span class="fc" id="L123">        this.moved = direction;</span>
+<span class="fc" id="L124">    }</span>
+
+    public Direction getMoved() {
+<span class="nc" id="L127">        return moved;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

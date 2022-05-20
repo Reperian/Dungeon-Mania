@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DungeonSaver.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project</a> &gt; <a href="index.source.html" class="el_package">dungeonmania.dungeon.util</a> &gt; <span class="el_source">DungeonSaver.java</span></div><h1>DungeonSaver.java</h1><pre class="source lang-java linenums">package dungeonmania.dungeon.util;
+
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+
+import dungeonmania.dungeon.Dungeon;
+import dungeonmania.util.FileLoader;
+
+<span class="nc" id="L22">public class DungeonSaver {</span>
+
+    public static String getId(String name) {
+<span class="fc" id="L25">        String[] tokenisedString = name.split(&quot;-&quot;);</span>
+<span class="fc" id="L26">        return tokenisedString[tokenisedString.length - 1];</span>
+    }
+
+    /**
+     * @precondition the name must be unique. The reference map for this dungeon must exist.
+     * @postcondition the dungeon json will be in the same format as json map files but with additional fields
+     * @param name
+     */
+    public static void saveDungeon(String name) {
+<span class="fc" id="L35">        Dungeon dungeon = Dungeon.getInstance();</span>
+        // create a gson type with specified properties
+<span class="fc" id="L37">        GsonBuilder builder = new GsonBuilder();</span>
+<span class="fc" id="L38">        builder.setPrettyPrinting();</span>
+<span class="fc" id="L39">        builder.setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES);</span>
+<span class="fc" id="L40">        Gson gson = builder.create();</span>
+        // get a hashmap of all entities in json form
+<span class="fc" id="L42">        JsonArray entities = new JsonArray();</span>
+<span class="fc" id="L43">        dungeon.getEntities().stream().forEach(e -&gt; entities.add(e.toJsonObject()));</span>
+        // create a map containing all attributes of a dungeon then add those attributes to the map
+<span class="fc" id="L45">        Map&lt;String, Object&gt; dungeonJsonMap = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L46">        dungeonJsonMap.put(&quot;id&quot;, getId(name));</span>
+<span class="fc" id="L47">        dungeonJsonMap.put(&quot;name&quot;, dungeon.getDungeonName());</span>
+<span class="fc" id="L48">        dungeonJsonMap.put(&quot;entities&quot;, entities);</span>
+<span class="fc" id="L49">        dungeonJsonMap.put(&quot;game_mode&quot;, dungeon.getGameMode());</span>
+        // gets goal from reference map, no exception should be thrown as from the precondition
+<span class="fc" id="L51">        dungeonJsonMap.put(&quot;goal-condition&quot;, dungeon.getGoal().toJsonObject());</span>
+
+        // Get the resultant json string
+<span class="fc" id="L54">        String outputString = gson.toJson(dungeonJsonMap, dungeonJsonMap.getClass());</span>
+        try{
+            // Creates a json file in the saves folder containing the json string
+<span class="fc" id="L57">            Writer writer = new BufferedWriter(new OutputStreamWriter(</span>
+<span class="fc" id="L58">                new FileOutputStream(Path.of(FileLoader.class.getResource(&quot;/saves&quot;).toURI()).toString() +</span>
+                                    &quot;/&quot; + name + &quot;.json&quot;),
+                                    &quot;utf-8&quot;));
+<span class="fc" id="L61">            writer.write(outputString);</span>
+<span class="fc" id="L62">            writer.close();</span>
+<span class="nc" id="L63">        } catch (IOException | URISyntaxException message) {</span>
+<span class="fc" id="L64">        }</span>
+<span class="fc" id="L65">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

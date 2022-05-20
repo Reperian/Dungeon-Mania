@@ -1,0 +1,38 @@
+{
+    "entities": [
+        {
+            "x": 0,
+            "y": 0,
+            "type": "player"
+        },
+        {
+            "x": 1,
+            "y": 0,
+            "type": "portal",
+            "colour": "BLUE"
+        },
+        {
+            "x": 4,
+            "y": 0,
+            "type": "portal",
+            "colour": "BLUE"
+        },
+        {
+            "x": 1,
+            "y": 2,
+            "type": "portal",
+            "colour": "ORANGE"
+        },
+        {
+            "x": 4,
+            "y": 2,
+            "type": "portal",
+            "colour": "ORANGE"
+        }
+    ],
+    "goal-condition": {
+        "goal": "exit"
+      },
+    "width": 5,
+    "height": 5
+}

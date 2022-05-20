@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Bow.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project</a> &gt; <a href="index.source.html" class="el_package">dungeonmania.entities.bow</a> &gt; <span class="el_source">Bow.java</span></div><h1>Bow.java</h1><pre class="source lang-java linenums">package dungeonmania.entities.bow;
+
+import dungeonmania.dungeon.Dungeon;
+import dungeonmania.entities.Entity;
+import dungeonmania.entities.arrows.Arrows;
+import dungeonmania.entities.behaviours.Buildable;
+import dungeonmania.entities.behaviours.Collectable;
+import dungeonmania.entities.behaviours.Weapon;
+import dungeonmania.entities.moving_entities.util.InventoryUtils;
+import dungeonmania.entities.player.Player;
+import dungeonmania.entities.util.EntityUtils;
+import dungeonmania.entities.wood.Wood;
+import dungeonmania.exceptions.InvalidActionException;
+import dungeonmania.response.models.ItemResponse;
+import dungeonmania.util.Direction;
+import dungeonmania.util.Position;
+
+public class Bow extends Entity implements Collectable, Buildable, Weapon { 
+    private static final String TYPE = &quot;bow&quot;;
+    private static final int DAMAGE = 0;
+    private static final int HIT_MULTIPLIER = 2;
+    private int durability;
+
+    /**
+     * Constructs a bow if a bow can be built from items in the player's inventory
+     */
+    public Bow() {
+<span class="fc" id="L28">        super(TYPE, new Position(0,0));</span>
+<span class="fc" id="L29">        build();</span>
+<span class="fc" id="L30">        this.durability = 5;</span>
+<span class="fc" id="L31">    }</span>
+
+    /**
+     * Constructs a bow, no need to check the player's inventory as this is only used when the bow is loaded from a json map
+     * @param position position the bow is spawned at on the map
+     */
+    public Bow(Position position) {
+<span class="fc" id="L38">        super(TYPE, position);</span>
+<span class="fc" id="L39">        this.durability = 5;</span>
+<span class="fc" id="L40">    }</span>
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+<span class="fc" id="L46">    public void onTick() {}</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean onOverlap(Entity entity, Direction dir) {
+<span class="fc" id="L53">        return collect();         </span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean collect() {
+<span class="fc" id="L61">        Dungeon.getInstance().getPlayer().addItemToInventory(this);</span>
+<span class="fc" id="L62">        Dungeon.getInstance().removeEntity(this);</span>
+<span class="fc" id="L63">        return true;</span>
+    }
+
+    /**
+     * Builds the bow if the player has sufficient items to build it by removing recipe items from the player's inventory
+     * @throws InvalidActionException if there aren't enough Collectables to build the bos
+     */
+    public void build() throws InvalidActionException {
+
+<span class="fc bfc" id="L72" title="All 2 branches covered.">        if (isBuildable()) {</span>
+<span class="fc" id="L73">            Player p = Dungeon.getInstance().getPlayer();</span>
+<span class="fc" id="L74">            p.removeNumOfTypeFromInventory(1, Wood.class);</span>
+<span class="fc" id="L75">            p.removeNumOfTypeFromInventory(3, Arrows.class);</span>
+<span class="fc" id="L76">        } else {</span>
+<span class="fc" id="L77">            throw new InvalidActionException(&quot;Insufficient Items to build Bow&quot;);</span>
+        }
+<span class="fc" id="L79">    }</span>
+    
+    /**
+     * Checks if a bow is buildable from the items in the player's inventory
+     * @return whether or not a bow is buildable
+     */
+    public static boolean isBuildable() {
+
+<span class="fc" id="L87">        Player player = Dungeon.getInstance().getPlayer();</span>
+
+<span class="fc" id="L89">        int numWood = EntityUtils.getEntitiesFromInventory(player.getInventory(), Wood.class).size();</span>
+<span class="fc" id="L90">        int numArrows = EntityUtils.getEntitiesFromInventory(player.getInventory(), Arrows.class).size();</span>
+
+<span class="fc bfc" id="L92" title="All 4 branches covered.">        if (numWood &gt;= 1 &amp;&amp; numArrows &gt;= 3) {</span>
+<span class="fc" id="L93">            return true;</span>
+
+        }
+
+<span class="fc" id="L97">        return false;</span>
+    }
+
+    /**
+     * @return int returns the durability
+     */
+    public int getDurability() {
+<span class="nc" id="L104">        return durability;</span>
+    }
+    /**
+     * Reduces durability of bow by amount
+     * @param amount
+     */
+    @Override
+    public void reduceDurability(int amount) {
+<span class="fc" id="L112">        durability -= amount;</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">        if (durability &lt;= 0) {</span>
+<span class="fc" id="L114">            InventoryUtils.removeItemIdFromInventory(Dungeon.getInstance().getPlayer().getInventory(), getId());</span>
+        }
+<span class="fc" id="L116">    }</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ItemResponse getItemResponse() {
+<span class="fc" id="L123">        return new ItemResponse(getId(), getType());</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+<span class="fc" id="L130">    public void init() {}</span>
+
+    /**
+     * @param durability the durability to set
+     */
+    public void setDurability(int durability) {
+<span class="nc" id="L136">        this.durability = durability;</span>
+<span class="nc" id="L137">    }</span>
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public float getDamage() {
+<span class="fc" id="L143">        return DAMAGE;</span>
+    }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getHitMultiplier() {
+<span class="fc" id="L150">        return HIT_MULTIPLIER;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PrimsAlgorithm.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project</a> &gt; <a href="index.source.html" class="el_package">dungeonmania.dungeon.map_generation</a> &gt; <span class="el_source">PrimsAlgorithm.java</span></div><h1>PrimsAlgorithm.java</h1><pre class="source lang-java linenums">package dungeonmania.dungeon.map_generation;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+
+import com.google.gson.JsonArray;
+
+import dungeonmania.entities.Entity;
+import dungeonmania.entities.exit.Exit;
+import dungeonmania.entities.wall.Wall;
+import dungeonmania.util.Direction;
+import dungeonmania.util.Position;
+
+
+public class PrimsAlgorithm {
+    private static final boolean WALL = false;
+    private static final boolean EMPTY = true;
+<span class="fc" id="L21">    private static final Random rand = new Random();</span>
+    private static final int WIDTH = 50;
+    private static final int HEIGHT = 50;
+<span class="fc" id="L24">    private boolean[][] map = new boolean[HEIGHT][WIDTH];</span>
+    private final int xStart, yStart, xEnd, yEnd;
+    /**
+     * Constructor for the prims algorithm
+     * @precondition all inputs are within [0,50)
+     * @param xStart
+     * @param yStart
+     * @param xEnd
+     * @param yEnd
+     */
+<span class="fc" id="L34">    public PrimsAlgorithm(int xStart, int yStart, int xEnd, int yEnd) {</span>
+<span class="fc" id="L35">        this.xStart = xStart;</span>
+<span class="fc" id="L36">        this.yStart = yStart;</span>
+<span class="fc" id="L37">        this.xEnd = xEnd;</span>
+<span class="fc" id="L38">        this.yEnd = yEnd;</span>
+<span class="fc" id="L39">    }</span>
+    /**
+     * Returns the value at position
+     * @preconditions X and Y for pos must be in [0,50)
+     * @param pos
+     * @return boolean
+     */
+    private boolean valueAtPosition(Position pos) {
+<span class="fc" id="L47">        return map[pos.getY()][pos.getX()];</span>
+    }
+    /**
+     * Returns the middle position of two positions
+     * @param a
+     * @param b
+     * @return Position
+     */
+    private Position getCenterPosition(Position a, Position b) {
+<span class="fc" id="L56">        return new Position((a.getX() + b.getX()) / 2, (a.getY() + b.getY()) / 2);</span>
+    }
+    /**
+     * Checks if the position is in boundary of the walls
+     * @param pos
+     * @return boolean
+     */
+    private boolean isInBoundary(Position pos) {
+<span class="fc bfc" id="L64" title="All 8 branches covered.">        return !((0 &gt; pos.getX() || pos.getX() &gt;= WIDTH - 1) || (0 &gt; pos.getY() || pos.getY() &gt;= HEIGHT - 1));</span>
+    }
+    /**
+     * Returns a list of neighbors of distance away from a position with a certain value
+     * @param pos
+     * @param distance
+     * @param value
+     * @return List&lt;Position&gt;
+     */
+    private List&lt;Position&gt; getNeighboursWithValue(Position pos, int distance, boolean value) {
+<span class="fc" id="L74">        List&lt;Position&gt; neighbours = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">        for (Direction offset : Direction.values()) {</span>
+            // By translating a scaled version of the offest we can find neighbouring squares
+<span class="fc" id="L77">            Position translatedPosition = pos.translateBy(offset.getOffset().scale(distance));</span>
+<span class="pc bpc" id="L78" title="1 of 6 branches missed.">            if (isInBoundary(translatedPosition) &amp;&amp; valueAtPosition(translatedPosition) == value &amp;&amp; !translatedPosition.equals(pos)) {</span>
+<span class="fc" id="L79">                neighbours.add(translatedPosition);</span>
+            }
+        }
+<span class="fc" id="L82">        return neighbours;</span>
+    }
+    // Set the value at a position to 'value'
+    private void setMapValue(Position pos, boolean value) {
+<span class="fc" id="L86">        map[pos.getY()][pos.getX()] = value;</span>
+<span class="fc" id="L87">    }</span>
+
+    public void runAlgorithm() {
+        // Start with all walls
+<span class="fc" id="L91">        map = new boolean[HEIGHT][WIDTH];</span>
+<span class="fc" id="L92">        Set&lt;Position&gt; options = new HashSet&lt;&gt;();</span>
+        //List&lt;Position&gt; options = new ArrayList&lt;&gt;();
+        // set start to empty
+<span class="fc" id="L95">        map[yStart][xStart] = true;</span>
+        // Add starting position neigbouring walls to options
+<span class="fc" id="L97">        Position next = new Position(xStart, yStart);</span>
+<span class="fc" id="L98">        options.addAll(getNeighboursWithValue(next, 2, WALL));</span>
+        // For all remaining positions
+<span class="fc bfc" id="L100" title="All 2 branches covered.">        while (!options.isEmpty()) {</span>
+            // Choose next
+<span class="fc" id="L102">            next = options.toArray(new Position[]{})[rand.nextInt(options.size())];</span>
+<span class="fc" id="L103">            options.remove(next);</span>
+            // Pick random neighbour dist 2 away and connect neighbour and next with empty space
+<span class="fc" id="L105">            List&lt;Position&gt; neighbours = getNeighboursWithValue(next, 2, EMPTY);</span>
+<span class="pc bpc" id="L106" title="1 of 2 branches missed.">            if (!neighbours.isEmpty()) {</span>
+<span class="fc" id="L107">                Position neighbour = neighbours.get(rand.nextInt(neighbours.size()));</span>
+<span class="fc" id="L108">                setMapValue(next, EMPTY);</span>
+<span class="fc" id="L109">                setMapValue(getCenterPosition(next, neighbour), EMPTY);</span>
+<span class="fc" id="L110">                setMapValue(neighbour, EMPTY);</span>
+            }
+            // Add cardinal walls of dist 2 of 'next'
+<span class="fc" id="L113">            options.addAll(getNeighboursWithValue(next, 2, WALL));</span>
+
+<span class="fc" id="L115">        }</span>
+        // Checks if the exit is on a wall
+<span class="pc bpc" id="L117" title="1 of 2 branches missed.">        if (map[yEnd][xEnd] != EMPTY) {</span>
+<span class="fc" id="L118">            map[yEnd][xEnd] = EMPTY;</span>
+<span class="fc" id="L119">            List&lt;Position&gt; endNeighbours = getNeighboursWithValue(new Position(xEnd, yEnd), 1, WALL);</span>
+<span class="pc bpc" id="L120" title="1 of 2 branches missed.">            if (endNeighbours.size() &gt; 0) {</span>
+<span class="fc" id="L121">                Position endNeighbour = endNeighbours.get(rand.nextInt(endNeighbours.size()));</span>
+<span class="fc" id="L122">                map[endNeighbour.getY()][endNeighbour.getX()] = EMPTY;</span>
+            }
+        }
+<span class="fc" id="L125">    }</span>
+    /**
+     * Converts the maze into a list of entities
+     * @return List&lt;Entity&gt;
+     */
+    private List&lt;Entity&gt; convertToEntities() {
+<span class="fc" id="L131">        List&lt;Entity&gt; entities = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">        for (int row = 0; row &lt; HEIGHT; row++) {</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">            for (int col = 0; col &lt; WIDTH; col++) {</span>
+<span class="fc" id="L134">                Position pos = new Position(col, row);</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">                if (valueAtPosition(pos) == WALL) {</span>
+<span class="fc" id="L136">                    entities.add(new Wall(pos));</span>
+                }
+            }
+        }
+<span class="fc" id="L140">        entities.add(new Exit(new Position(xEnd, yEnd)));</span>
+<span class="fc" id="L141">        return entities;</span>
+    }
+    // converts the map into a json array for loading
+    public JsonArray mapToJsonArray() {
+<span class="fc" id="L145">        JsonArray entities = new JsonArray();</span>
+<span class="fc" id="L146">        convertToEntities().stream().forEach(e -&gt; entities.add(e.toJsonObject()));</span>
+<span class="fc" id="L147">        return entities;</span>
+    }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

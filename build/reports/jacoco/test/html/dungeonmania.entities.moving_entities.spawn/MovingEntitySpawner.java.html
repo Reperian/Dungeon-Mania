@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MovingEntitySpawner.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project</a> &gt; <a href="index.source.html" class="el_package">dungeonmania.entities.moving_entities.spawn</a> &gt; <span class="el_source">MovingEntitySpawner.java</span></div><h1>MovingEntitySpawner.java</h1><pre class="source lang-java linenums">package dungeonmania.entities.moving_entities.spawn;
+
+import java.util.List;
+import java.util.Random;
+
+import dungeonmania.dungeon.Dungeon;
+import dungeonmania.entities.Entity;
+import dungeonmania.entities.moving_entities.Assassin;
+import dungeonmania.entities.moving_entities.Hydra;
+import dungeonmania.entities.moving_entities.Mercenary;
+import dungeonmania.entities.moving_entities.Spider;
+import dungeonmania.entities.moving_entities.spider.PeacefulSpider;
+import dungeonmania.entities.moving_entities.spider.Util;
+import dungeonmania.entities.util.EntityUtils;
+import dungeonmania.util.Position;
+
+<span class="nc" id="L17">public class MovingEntitySpawner {</span>
+    private static final int STANDARD_ZOMBIE_RATE = 20;
+    private static final int HARD_ZOMBIE_RATE = 15;
+
+    public static void Spawn(String gameMode, int tick) {
+<span class="fc" id="L22">        List&lt;Entity&gt; entities = Dungeon.getInstance().getEntities();</span>
+<span class="fc" id="L23">        int spiders = EntityUtils.getEntitiesToTypeList(entities, Spider.class).size();</span>
+<span class="fc bfc" id="L24" title="All 6 branches covered.">        if (tick % (gameMode.equals(&quot;Hard&quot;) ? HARD_ZOMBIE_RATE : STANDARD_ZOMBIE_RATE) == 0 &amp;&amp; spiders &lt; 4) {</span>
+<span class="fc" id="L25">            spiderSpawn(gameMode, entities);</span>
+        }
+
+<span class="fc bfc" id="L28" title="All 4 branches covered.">        if (tick % 50 == 0 &amp;&amp; gameMode.equals(&quot;Hard&quot;)) {</span>
+<span class="fc" id="L29">            hydraSpawn(gameMode, entities);</span>
+        }
+
+<span class="fc bfc" id="L32" title="All 2 branches covered.">        if (tick % 50 == 0) {</span>
+<span class="fc" id="L33">            mercenarySpawn(gameMode, entities);</span>
+        }
+<span class="fc" id="L35">	}</span>
+
+    public static void spiderSpawn(String gameMode, List&lt;Entity&gt; entities) {
+
+<span class="fc" id="L39">        Position spawnLocation = Util.getRandomValidPosition();</span>
+<span class="fc bfc" id="L40" title="All 2 branches covered.">        if (spawnLocation == null) {</span>
+<span class="fc" id="L41">            return;</span>
+        }
+        else {
+<span class="pc bpc" id="L44" title="1 of 4 branches missed.">            switch(gameMode) {</span>
+                case(&quot;Standard&quot;):
+<span class="fc" id="L46">                    entities.add(new Spider(new Position(spawnLocation.getX(), spawnLocation.getY(), 2)));</span>
+<span class="fc" id="L47">                    return;</span>
+                case(&quot;Peaceful&quot;):
+<span class="fc" id="L49">                    entities.add(new PeacefulSpider(new Position(spawnLocation.getX(), spawnLocation.getY(), 2)));</span>
+<span class="fc" id="L50">                    return;</span>
+                case(&quot;Hard&quot;):
+<span class="fc" id="L52">                    entities.add(new Spider(new Position(spawnLocation.getX(), spawnLocation.getY(), 2)));    </span>
+<span class="fc" id="L53">                    return;</span>
+                default:
+<span class="nc" id="L55">                    new IllegalArgumentException(&quot;Invalid Game Mode&quot;);</span>
+            }
+        }
+
+
+<span class="nc" id="L60">    }</span>
+
+    public static void hydraSpawn(String gameMode, List&lt;Entity&gt; entities) {
+
+<span class="fc" id="L64">        Position spawnLocation = Util.getRandomValidPosition();</span>
+
+<span class="pc bpc" id="L66" title="1 of 2 branches missed.">        if (spawnLocation == null) {</span>
+<span class="nc" id="L67">            return;</span>
+        }
+        else {
+<span class="pc bpc" id="L70" title="3 of 4 branches missed.">            switch(gameMode) {</span>
+                case(&quot;Standard&quot;):
+<span class="nc" id="L72">                    return;</span>
+                case(&quot;Peaceful&quot;):
+<span class="nc" id="L74">                    return;</span>
+                case(&quot;Hard&quot;):
+<span class="fc" id="L76">                    entities.add(new Hydra(new Position(spawnLocation.getX(), spawnLocation.getY(), 2)));    </span>
+<span class="fc" id="L77">                    return;</span>
+                default:
+<span class="nc" id="L79">                    new IllegalArgumentException(&quot;Invalid Game Mode&quot;);</span>
+            }
+        }
+<span class="nc" id="L82">    }</span>
+
+    public static void mercenarySpawn(String gameMode, List&lt;Entity&gt; entities) {
+
+<span class="fc" id="L86">        Position spawnLocation = Dungeon.getInstance().getEntry();</span>
+<span class="fc" id="L87">        Random rand = Dungeon.getInstance().getRandom();</span>
+
+<span class="fc bfc" id="L89" title="All 2 branches covered.">        if (rand.nextInt(100) &lt; 30) {</span>
+<span class="pc bpc" id="L90" title="2 of 4 branches missed.">            switch(gameMode) {</span>
+                case(&quot;Standard&quot;):
+<span class="fc" id="L92">                    entities.add(new Assassin(new Position(spawnLocation.getX(), spawnLocation.getY(), 2)));</span>
+<span class="fc" id="L93">                    return;</span>
+                case(&quot;Peaceful&quot;):
+<span class="nc" id="L95">                    entities.add(new Assassin(new Position(spawnLocation.getX(), spawnLocation.getY(), 2)));</span>
+<span class="nc" id="L96">                    return;</span>
+                case(&quot;Hard&quot;):
+<span class="fc" id="L98">                    entities.add(new Assassin(new Position(spawnLocation.getX(), spawnLocation.getY(), 2)));    </span>
+<span class="fc" id="L99">                    return;</span>
+                default:
+<span class="nc" id="L101">                    new IllegalArgumentException(&quot;Invalid Game Mode&quot;);</span>
+            }
+        }
+        else {
+<span class="pc bpc" id="L105" title="3 of 4 branches missed.">            switch(gameMode) {</span>
+                case(&quot;Standard&quot;):
+<span class="fc" id="L107">                    entities.add(new Mercenary(new Position(spawnLocation.getX(), spawnLocation.getY(), 2)));</span>
+<span class="fc" id="L108">                    return;</span>
+                case(&quot;Peaceful&quot;):
+<span class="nc" id="L110">                    entities.add(new Mercenary(new Position(spawnLocation.getX(), spawnLocation.getY(), 2)));</span>
+<span class="nc" id="L111">                    return;</span>
+                case(&quot;Hard&quot;):
+<span class="nc" id="L113">                    entities.add(new Mercenary(new Position(spawnLocation.getX(), spawnLocation.getY(), 2)));    </span>
+<span class="nc" id="L114">                    return;</span>
+                default:
+<span class="nc" id="L116">                    new IllegalArgumentException(&quot;Invalid Game Mode&quot;);</span>
+            }
+        }
+
+
+<span class="nc" id="L121">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

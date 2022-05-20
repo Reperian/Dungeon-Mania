@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dungeonmania.BuildableEntitiesTests" tests="6" skipped="0" failures="0" errors="0" timestamp="2021-11-14T12:41:50" hostname="DESKTOP-C1T19SJ" time="0.076">
+  <properties/>
+  <testcase name="testBuildBow()" classname="dungeonmania.BuildableEntitiesTests" time="0.022"/>
+  <testcase name="testInsufficientItems()" classname="dungeonmania.BuildableEntitiesTests" time="0.003"/>
+  <testcase name="testInvalidBuildable()" classname="dungeonmania.BuildableEntitiesTests" time="0.003"/>
+  <testcase name="testBuildShield1()" classname="dungeonmania.BuildableEntitiesTests" time="0.017"/>
+  <testcase name="testBuildShield2()" classname="dungeonmania.BuildableEntitiesTests" time="0.018"/>
+  <testcase name="testBowShieldDurability()" classname="dungeonmania.BuildableEntitiesTests" time="0.012"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

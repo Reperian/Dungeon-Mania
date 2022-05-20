@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Armour.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project</a> &gt; <a href="index.source.html" class="el_package">dungeonmania.entities.armour</a> &gt; <span class="el_source">Armour.java</span></div><h1>Armour.java</h1><pre class="source lang-java linenums">package dungeonmania.entities.armour;
+
+import com.google.gson.JsonObject;
+
+import dungeonmania.dungeon.Dungeon;
+import dungeonmania.entities.Entity;
+import dungeonmania.entities.behaviours.Collectable;
+import dungeonmania.entities.behaviours.Defence;
+import dungeonmania.entities.moving_entities.util.InventoryUtils;
+import dungeonmania.response.models.ItemResponse;
+import dungeonmania.util.Direction;
+import dungeonmania.util.Position;
+
+public class Armour extends Entity implements Collectable, Defence {
+    private static final String TYPE = &quot;armour&quot;;
+    private static final float DAMAGE_REDUCTION = 0.5f;
+    private static final int MAX_DURABILITY = 20; // change this
+
+<span class="fc" id="L19">    private int durability = MAX_DURABILITY;</span>
+
+    /**
+     * First constructor for the armour
+     * @param position
+     */
+    public Armour(Position position) {
+<span class="fc" id="L26">        this(MAX_DURABILITY, position);</span>
+<span class="fc" id="L27">    }</span>
+
+    /**
+     * Second constructor for the armour
+     * @param durability
+     * @param position
+     */
+    public Armour(int durability, Position position) {
+<span class="fc" id="L35">        super(TYPE, position);</span>
+<span class="fc" id="L36">        this.durability = durability;</span>
+<span class="fc" id="L37">    }</span>
+
+    public int getDurability() {
+<span class="nc" id="L40">        return durability;</span>
+    }
+    public void setDurability(int durability) {
+<span class="nc" id="L43">        this.durability = durability;</span>
+<span class="nc" id="L44">    }</span>
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+<span class="fc" id="L49">    public void onTick() {}</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean onOverlap(Entity entity, Direction dir) {
+<span class="fc" id="L56">        return collect();   </span>
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ItemResponse getItemResponse() {
+<span class="fc" id="L64">        return new ItemResponse(getId(), getType());</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void reduceDurability(int amount) {
+<span class="fc" id="L72">        durability -= amount;</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">        if (durability &lt;= 0) {</span>
+<span class="fc" id="L74">            InventoryUtils.removeItemIdFromInventory(Dungeon.getInstance().getPlayer().getInventory(), getId());</span>
+        }
+<span class="fc" id="L76">    }</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean collect() {
+<span class="fc" id="L83">        Dungeon.getInstance().getPlayer().addItemToInventory(this);</span>
+<span class="fc" id="L84">        Dungeon.getInstance().removeEntity(this);</span>
+<span class="fc" id="L85">        return true;</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+<span class="fc" id="L92">    public void init() {}</span>
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public JsonObject toJsonObject() {
+<span class="nc" id="L98">        JsonObject obj = super.toJsonObject();</span>
+<span class="nc" id="L99">        obj.addProperty(&quot;durability&quot;, durability);</span>
+<span class="nc" id="L100">        return obj;</span>
+    }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public float getFlatDefence() {
+<span class="fc" id="L107">        return 0;</span>
+    }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public float getPercentageDefence() {
+<span class="fc" id="L114">        return DAMAGE_REDUCTION;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

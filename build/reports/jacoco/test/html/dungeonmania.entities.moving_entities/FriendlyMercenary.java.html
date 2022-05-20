@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FriendlyMercenary.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project</a> &gt; <a href="index.source.html" class="el_package">dungeonmania.entities.moving_entities</a> &gt; <span class="el_source">FriendlyMercenary.java</span></div><h1>FriendlyMercenary.java</h1><pre class="source lang-java linenums">package dungeonmania.entities.moving_entities;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.google.gson.JsonObject;
+
+import dungeonmania.dungeon.Dungeon;
+import dungeonmania.dungeon.util.InventorySaver;
+import dungeonmania.entities.Entity;
+import dungeonmania.entities.behaviours.Collectable;
+import dungeonmania.entities.behaviours.EntityDamage;
+import dungeonmania.entities.behaviours.EntityHealth;
+import dungeonmania.entities.behaviours.Teleportable;
+import dungeonmania.entities.player.Player;
+import dungeonmania.entities.util.EntityUtils;
+import dungeonmania.movement.FollowMovement;
+import dungeonmania.response.models.AnimationQueue;
+import dungeonmania.util.Direction;
+import dungeonmania.util.Position;
+
+//Mercenaries that have been bribed and will forever remain loyal to the player... as long as they are rich.
+public class FriendlyMercenary extends MovingEntity implements EntityDamage, EntityHealth, Teleportable {
+
+    private final static String TYPE = &quot;mercenary_friendly&quot;;
+    private final static int MAX_HEALTH = 5;
+<span class="fc" id="L28">    private int friendly_period = Integer.MAX_VALUE;</span>
+    
+    private Position prev_pos;
+
+    public FriendlyMercenary(Position position) {
+<span class="fc" id="L33">        super(TYPE, position);</span>
+<span class="fc" id="L34">        setHealth(MAX_HEALTH);</span>
+<span class="fc" id="L35">        setDamage(10);</span>
+<span class="fc" id="L36">        movement = new FollowMovement();</span>
+<span class="fc" id="L37">        defaultMovement = movement;</span>
+<span class="fc" id="L38">    }</span>
+
+    public FriendlyMercenary(String type, Position position) {
+<span class="fc" id="L41">        super(type, position);</span>
+<span class="fc" id="L42">    }</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onTick() {
+<span class="fc" id="L49">        setMoved(Direction.NONE);</span>
+<span class="fc" id="L50">        Position curPosition = getPosition();</span>
+<span class="fc" id="L51">        Player player = Dungeon.getInstance().getPlayer();</span>
+<span class="fc" id="L52">        prev_pos = getPosition();</span>
+<span class="fc" id="L53">        movement.move(this);</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">        if (EntityUtils.getEntitiesAtPosition(getPosition()).contains(player)) {</span>
+<span class="fc" id="L55">            setPosition(curPosition);</span>
+        }
+<span class="fc" id="L57">        System.out.println(getHealth());</span>
+<span class="fc" id="L58">        friendly_period_tick();</span>
+
+<span class="fc" id="L60">    }</span>
+    @Override 
+    public void onDeath() {
+<span class="fc bfc" id="L63" title="All 2 branches covered.">        for (Collectable item : getInventory()) {</span>
+<span class="fc" id="L64">            ((Entity)item).setPosition(new Position(getPosition().getX(), getPosition().getY()));</span>
+<span class="fc" id="L65">            Dungeon.getInstance().addEntity((Entity)item);</span>
+<span class="fc" id="L66">        }</span>
+<span class="fc" id="L67">        Dungeon.getInstance().getPlayer().removeAlly(this);</span>
+<span class="fc" id="L68">        Dungeon.getInstance().getEntities().remove(this);</span>
+<span class="fc" id="L69">    }</span>
+    /**
+     * checks if the player is within the battle radius
+     * @param p
+     * @param entity
+     * @return true if player in battle radius, false if not
+     */
+    public boolean checkBattleRadius(Player p) {
+<span class="nc" id="L77">        List&lt;Position&gt; battleRadius = getPosition().getBattleRadius();</span>
+<span class="nc" id="L78">        List&lt;Entity&gt; eList = Dungeon.getInstance().getEntities();</span>
+        
+<span class="nc bnc" id="L80" title="All 2 branches missed.">        for (int i = 0; i &lt; battleRadius.size(); i++) {</span>
+<span class="nc" id="L81">            Position pos = battleRadius.get(i);</span>
+<span class="nc" id="L82">            List&lt;Entity&gt; entities = eList.stream().filter(e -&gt; (e.getPosition().equals(pos))).collect(Collectors.toList());</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">            if (entities.contains(p)) {</span>
+<span class="nc" id="L84">                return true;</span>
+            }
+        }
+<span class="nc" id="L87">        return false;</span>
+    }
+
+    /**
+     * Calculates when to convert a temporary friendly mercenary back into a mercenary if they have been bribed by the sceptre
+     */
+    public void friendly_period_tick() {
+        
+<span class="fc" id="L95">        friendly_period--;</span>
+
+<span class="fc bfc" id="L97" title="All 2 branches covered.">        if (friendly_period &lt;= 0) {</span>
+
+<span class="fc" id="L99">            Dungeon dungeon = Dungeon.getInstance();</span>
+<span class="fc" id="L100">            Player player = dungeon.getPlayer();</span>
+
+<span class="fc" id="L102">            dungeon.removeEntity(this);</span>
+<span class="fc" id="L103">            player.removeAlly(this);</span>
+<span class="fc" id="L104">            Mercenary enemy = new Mercenary(new Position(getPosition().getX(), getPosition().getY(), 2));</span>
+<span class="fc" id="L105">            dungeon.addEntity(enemy); </span>
+
+        }
+
+<span class="fc" id="L109">    }</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void init() {
+        
+<span class="fc" id="L117">    }</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean onOverlap(Entity entity, Direction dir) {
+<span class="fc" id="L124">        return true;</span>
+    }
+    /**
+     * Animations for the MovingEntities
+     */
+    @Override
+    public List&lt;AnimationQueue&gt; getAnimationResponse(){
+<span class="fc" id="L131">        animationBuffer.add(new AnimationQueue(&quot;PostTick&quot;, getId(), Arrays.asList(&quot;healthbar set &quot; + (float)getHealth() / MAX_HEALTH, &quot;healthbar tint 0x00ff00&quot;), false, -1));</span>
+<span class="fc" id="L132">        return super.getAnimationResponse();</span>
+    }
+    
+    @Override
+    public JsonObject toJsonObject(){
+<span class="nc" id="L137">        JsonObject obj = super.toJsonObject();</span>
+<span class="nc" id="L138">        obj.addProperty(&quot;health&quot;, getHealth());</span>
+<span class="nc" id="L139">        obj.add(&quot;inventory&quot;, InventorySaver.inventoryToJsonArray(getInventory()));</span>
+<span class="nc" id="L140">        return obj;</span>
+    }
+
+
+    /**
+     * @return int return the friendly_period
+     */
+    public int getFriendly_period() {
+<span class="fc" id="L148">        return friendly_period;</span>
+    }
+
+    /**
+     * @param friendly_period the friendly_period to set
+     */
+    public void setFriendly_period(int friendly_period) {
+<span class="fc" id="L155">        this.friendly_period = friendly_period;</span>
+<span class="fc" id="L156">    }</span>
+
+    @Override
+    public Position getPrevPosition() {
+<span class="fc" id="L160">        return prev_pos;</span>
+    }
+
+    @Override
+    public Position getCurrPosition() {
+<span class="fc" id="L165">        return getPosition();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

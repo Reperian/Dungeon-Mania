@@ -1,0 +1,23 @@
+{
+  "entities": [
+    {
+      "x": 2,
+      "y": 1,
+      "type": "player",
+      "health": 20,
+      "inventory": []
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "type": "door_unlocked",
+      "key": 1
+    }
+  ],
+  "name": "doorTest",
+  "goal-condition": {
+    "goal": "exit"
+  },
+  "game_mode": "Standard",
+  "id": "1636893711042"
+}

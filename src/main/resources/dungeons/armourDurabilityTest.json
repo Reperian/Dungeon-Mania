@@ -1,0 +1,24 @@
+{ 
+    "width": 10,
+    "height": 10,
+    "entities": [
+      {
+        "x": 4,
+        "y": 5,
+        "type": "player"
+      },
+      {
+        "x": 4,
+        "y": 4,
+        "type": "armour"
+      },
+      {
+        "x": 4,
+        "y": 3,
+        "type": "spider"
+      }
+    ],
+    "goal-condition": {
+      "goal": "exit"
+    }
+}

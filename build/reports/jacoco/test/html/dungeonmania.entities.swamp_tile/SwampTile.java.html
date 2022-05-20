@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SwampTile.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project</a> &gt; <a href="index.source.html" class="el_package">dungeonmania.entities.swamp_tile</a> &gt; <span class="el_source">SwampTile.java</span></div><h1>SwampTile.java</h1><pre class="source lang-java linenums">package dungeonmania.entities.swamp_tile;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.google.gson.JsonObject;
+
+import dungeonmania.entities.Entity;
+import dungeonmania.entities.moving_entities.MovingEntity;
+import dungeonmania.entities.util.EntityUtils;
+import dungeonmania.movement.StuckMovement;
+import dungeonmania.util.Direction;
+import dungeonmania.util.Position;
+
+public class SwampTile extends Entity{
+
+    private int movement_factor;
+    private static final int TICKS_TO_TRAVERSE = 1;
+    private static final String TYPE = &quot;swamp_tile&quot;;
+<span class="fc" id="L20">    List&lt;MovingEntity&gt; stuck_entities = new ArrayList&lt;MovingEntity&gt;();</span>
+
+    /**
+     * Constructor for a SwampTile
+     */
+    public SwampTile(Position position, int movement_factor) {
+<span class="fc" id="L26">        super(TYPE, position);</span>
+<span class="fc" id="L27">        this.movement_factor = movement_factor;</span>
+<span class="fc" id="L28">    }</span>
+
+    /**
+     * @{inheritDoc}
+     */
+    @Override
+    public JsonObject toJsonObject() {
+<span class="nc" id="L35">        JsonObject obj = new JsonObject();</span>
+<span class="nc" id="L36">        obj.addProperty(&quot;x&quot;, getPosition().getX());</span>
+<span class="nc" id="L37">        obj.addProperty(&quot;y&quot;, getPosition().getY());</span>
+<span class="nc" id="L38">        obj.addProperty(&quot;movement_factor&quot;, movement_factor);</span>
+<span class="nc" id="L39">        return obj;</span>
+    }
+
+    /**
+     * @{inheritDoc}
+     */
+    @Override
+    public void onTick() {
+<span class="fc" id="L47">        remove_old_entities();</span>
+<span class="fc" id="L48">        get_new_entities();</span>
+<span class="fc" id="L49">    }</span>
+
+     /**
+     * removes old entities from the stuck entities lise
+     */
+    private void remove_old_entities() { 
+<span class="fc" id="L55">        List&lt;Entity&gt; entities = EntityUtils.getEntitiesAtPosition(getPosition());</span>
+        
+<span class="fc" id="L57">        List&lt;MovingEntity&gt; moving_entities = EntityUtils.getEntitiesToTypeList(entities, MovingEntity.class);</span>
+
+<span class="fc bfc" id="L59" title="All 2 branches covered.">        for (int i = 0; i &lt; stuck_entities.size(); i++) {</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">            if (!moving_entities.contains(stuck_entities.get(i))) {</span>
+<span class="fc" id="L61">                stuck_entities.remove(stuck_entities.get(i));</span>
+            }
+        }
+<span class="fc" id="L64">    }</span>
+
+    /**
+     * Gets any new entities that have moved onto the swamp tile and adds them to the stuck_entities list
+     */
+    private void get_new_entities() { 
+<span class="fc" id="L70">        List&lt;Entity&gt; entities = EntityUtils.getEntitiesAtPosition(getPosition());</span>
+        
+<span class="fc" id="L72">        List&lt;MovingEntity&gt; moving_entities = EntityUtils.getEntitiesToTypeList(entities, MovingEntity.class);</span>
+
+<span class="fc bfc" id="L74" title="All 2 branches covered.">        for (MovingEntity m : moving_entities) {</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">            if (!stuck_entities.contains(m)) {</span>
+<span class="fc" id="L76">                m.setMovementStrategy(new StuckMovement(TICKS_TO_TRAVERSE * movement_factor - 1));</span>
+<span class="fc" id="L77">                stuck_entities.add(m);</span>
+            }
+<span class="fc" id="L79">        }</span>
+<span class="fc" id="L80">    }</span>
+
+    /**
+     * @{inheritDoc}
+     */
+    @Override
+    public boolean onOverlap(Entity entity, Direction dir) {
+<span class="fc" id="L87">        return true;</span>
+    }
+
+    /**
+     * @{inheritDoc}
+     */
+    @Override
+    public void init() {
+<span class="fc" id="L95">        get_new_entities();</span>
+<span class="fc" id="L96">    }</span>
+    /**
+     * Returns the movement factor
+     * @return int
+     */
+    public int getMovementFactor() {
+<span class="fc" id="L102">        return movement_factor;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

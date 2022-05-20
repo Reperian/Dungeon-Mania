@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Bomb.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project</a> &gt; <a href="index.source.html" class="el_package">dungeonmania.entities.bomb</a> &gt; <span class="el_source">Bomb.java</span></div><h1>Bomb.java</h1><pre class="source lang-java linenums">package dungeonmania.entities.bomb;
+
+import dungeonmania.dungeon.Dungeon;
+import dungeonmania.entities.Entity;
+import dungeonmania.entities.behaviours.Collectable;
+import dungeonmania.entities.behaviours.Usable;
+import dungeonmania.entities.moving_entities.util.InventoryUtils;
+import dungeonmania.entities.player.Player;
+import dungeonmania.response.models.ItemResponse;
+import dungeonmania.util.Direction;
+import dungeonmania.util.Position;
+
+public class Bomb extends Entity implements Collectable, Usable {
+    private static final String TYPE = &quot;bomb&quot;;
+
+    /**
+     * Constructor for the bomb
+     * @param position
+     */
+    public Bomb(Position position) {
+<span class="fc" id="L21">        super(TYPE, position);</span>
+<span class="fc" id="L22">    }</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+<span class="fc" id="L28">    public void onTick() {}</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean onOverlap(Entity entity, Direction dir) {
+<span class="fc" id="L35">        return collect();         </span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ItemResponse getItemResponse() {
+<span class="fc" id="L43">        return new ItemResponse(getId(), getType());</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void use() {
+<span class="fc" id="L51">        Player player = Dungeon.getInstance().getPlayer();</span>
+<span class="fc" id="L52">        Position pos = player.getPosition();</span>
+        // places a bomb in the players current position
+<span class="fc" id="L54">        Dungeon.getInstance().getEntities().add(new PlacedBomb(new Position(pos.getX(), pos.getY(), 1)));</span>
+<span class="fc" id="L55">        InventoryUtils.removeItemIdFromInventory(player.getInventory(), getId());</span>
+<span class="fc" id="L56">    }</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean collect() {
+<span class="fc" id="L63">        Dungeon.getInstance().getPlayer().addItemToInventory(this);</span>
+<span class="fc" id="L64">        Dungeon.getInstance().removeEntity(this);</span>
+<span class="fc" id="L65">        return true;</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+<span class="fc" id="L72">    public void init() {}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

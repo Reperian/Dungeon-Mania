@@ -1,0 +1,111 @@
+{   
+    "entities": [
+      {
+        "x": 3,
+        "y": 6,
+        "type": "treasure"
+      },
+      {
+        "x": 2,
+        "y": 5,
+        "type": "key",
+        "key" : 1
+      },
+      {
+        "x": 3,
+        "y": 5,
+        "type": "wood"
+      },
+      {
+        "x": 4,
+        "y": 5,
+        "type": "wood"
+      },
+      {
+        "x": 5,
+        "y": 5,
+        "type": "player"
+      },
+      {
+        "x": 5,
+        "y": 6,
+        "type": "bow"
+      },
+      {
+        "x": 5,
+        "y": 6,
+        "type": "shield"
+      },
+      {
+        "x": 5,
+        "y": 6,
+        "type": "shield"
+      },
+      {
+        "x": 5,
+        "y": 6,
+        "type": "shield"
+      },
+      {
+        "x": 5,
+        "y": 6,
+        "type": "shield"
+      },
+      {
+        "x": 5,
+        "y": 8,
+        "type": "mercenary"
+      },
+      {
+        "x": 5,
+        "y": 8,
+        "type": "mercenary"
+      },
+      {
+        "x": 5,
+        "y": 8,
+        "type": "mercenary"
+      },
+      {
+        "x": 5,
+        "y": 8,
+        "type": "mercenary"
+      },
+      {
+        "x": 5,
+        "y": 8,
+        "type": "mercenary"
+      },
+      {
+        "x": 6,
+        "y": 5,
+        "type": "wood"
+      },
+      {
+        "x": 7,
+        "y": 5,
+        "type": "arrow"
+      },
+      {
+        "x": 8,
+        "y": 5,
+        "type": "arrow"
+      },
+      {
+        "x": 9,
+        "y": 5,
+        "type": "arrow"
+      },
+      {
+        "x": 10,
+        "y": 5,
+        "type": "zombie_toast_spawner"
+      }
+
+    ],
+
+    "goal-condition": {
+        "goal": "exit"
+    }
+
+}

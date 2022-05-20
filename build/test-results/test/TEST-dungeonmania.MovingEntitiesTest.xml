@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dungeonmania.MovingEntitiesTest" tests="15" skipped="0" failures="0" errors="0" timestamp="2021-11-14T12:41:51" hostname="DESKTOP-C1T19SJ" time="0.081">
+  <properties/>
+  <testcase name="testFriendlyMercenary()" classname="dungeonmania.MovingEntitiesTest" time="0.006"/>
+  <testcase name="testZombieMovement()" classname="dungeonmania.MovingEntitiesTest" time="0.003"/>
+  <testcase name="testBattleRadius()" classname="dungeonmania.MovingEntitiesTest" time="0.004"/>
+  <testcase name="testPlayerMovement()" classname="dungeonmania.MovingEntitiesTest" time="0.003"/>
+  <testcase name="testMercenaryMovement()" classname="dungeonmania.MovingEntitiesTest" time="0.023"/>
+  <testcase name="testPlayerMoveIntoWall()" classname="dungeonmania.MovingEntitiesTest" time="0.003"/>
+  <testcase name="testSpiderWhenObstructed()" classname="dungeonmania.MovingEntitiesTest" time="0.002"/>
+  <testcase name="mercenarySpawn()" classname="dungeonmania.MovingEntitiesTest" time="0.003"/>
+  <testcase name="mercenaryArmour()" classname="dungeonmania.MovingEntitiesTest" time="0.002"/>
+  <testcase name="testSpiderMovement()" classname="dungeonmania.MovingEntitiesTest" time="0.002"/>
+  <testcase name="testRunAway()" classname="dungeonmania.MovingEntitiesTest" time="0.003"/>
+  <testcase name="testBattle()" classname="dungeonmania.MovingEntitiesTest" time="0.002"/>
+  <testcase name="testMercenaryMovement2()" classname="dungeonmania.MovingEntitiesTest" time="0.016"/>
+  <testcase name="testSpiderMovementBoulder()" classname="dungeonmania.MovingEntitiesTest" time="0.002"/>
+  <testcase name="testMercenaryAllyBattle()" classname="dungeonmania.MovingEntitiesTest" time="0.003"/>
+  <system-out><![CDATA[4
+4
+4
+4
+2
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

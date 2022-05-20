@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Dungeon.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project</a> &gt; <a href="index.source.html" class="el_package">dungeonmania.dungeon</a> &gt; <span class="el_source">Dungeon.java</span></div><h1>Dungeon.java</h1><pre class="source lang-java linenums">package dungeonmania.dungeon;
+
+import java.time.Instant;
+import java.util.*;
+
+import com.google.gson.JsonObject;
+
+import dungeonmania.dungeon.util.BuildableCreator;
+import dungeonmania.dungeon.util.DungeonLoader;
+import dungeonmania.entities.*;
+import dungeonmania.entities.behaviours.Collectable;
+import dungeonmania.entities.moving_entities.spawn.MovingEntitySpawner;
+import dungeonmania.entities.behaviours.Interactable;
+import dungeonmania.entities.behaviours.Usable;
+import dungeonmania.goals.*;
+import dungeonmania.entities.player.Player;
+import dungeonmania.entities.player.battle_strategies.AvoidBattleStrategy;
+import dungeonmania.entities.player.battle_strategies.StandardStrategy;
+import dungeonmania.entities.player.status_states.DefaultState;
+import dungeonmania.entities.player.status_states.InvisibleState;
+import dungeonmania.entities.util.EntityUtils;
+import dungeonmania.exceptions.InvalidActionException;
+import dungeonmania.response.models.AnimationQueue;
+import dungeonmania.response.models.DungeonResponse;
+import dungeonmania.response.models.EntityResponse;
+import dungeonmania.response.models.ItemResponse;
+import dungeonmania.util.Direction;
+import dungeonmania.util.Position;
+
+public class Dungeon {
+<span class="fc" id="L31">    private static Dungeon dungeon = null;</span>
+
+<span class="fc" id="L33">    private final int INTERACT_RADIUS = 2;</span>
+
+    private int height;
+    private int width;
+    private String gameMode;
+    private String dungeonName;
+    private String dungeonId;
+    private Goal goal;
+    private String goals;
+    private List&lt;Entity&gt; entities;
+    private Player player;
+    private Random random;
+    private int tick;
+    private Position entry;
+    
+    /**
+     * Constructor for the dungeon
+     * @param dl
+     * @param dungeonId
+     * @param dungeonName
+     */
+<span class="fc" id="L54">    private Dungeon(DungeonLoader dl, String dungeonId, String dungeonName) {</span>
+<span class="fc" id="L55">        this.height = dl.getHeight();</span>
+<span class="fc" id="L56">        this.width = dl.getWidth();</span>
+<span class="fc" id="L57">        this.entities = dl.getEntities();</span>
+<span class="fc" id="L58">        this.dungeonId = dungeonId;</span>
+<span class="fc" id="L59">        this.dungeonName = dungeonName;</span>
+<span class="fc" id="L60">        this.gameMode = dl.getGameMode();</span>
+<span class="fc" id="L61">        this.player = EntityUtils.getEntitiesToTypeList(entities, Player.class).get(0);</span>
+<span class="fc" id="L62">        this.random = new Random(System.currentTimeMillis());</span>
+<span class="fc" id="L63">        this.goal = dl.getGoal();</span>
+<span class="fc" id="L64">        this.entry = player.getPosition();</span>
+<span class="fc" id="L65">        this.tick = 0;</span>
+<span class="fc" id="L66">        dungeon = this;</span>
+<span class="fc" id="L67">    }</span>
+
+    /**
+     * Constructor for the dungeon
+     * @param dl
+     */
+    private Dungeon(DungeonLoader dl) {
+<span class="fc" id="L74">        this(dl, dl.getID(), dl.getName());</span>
+<span class="fc" id="L75">    }</span>
+
+    /**
+     * @precondition path must be valid
+     * Loads up a new dungeon instance
+     * @return List&lt;EntityResponse&gt;
+     */
+    public static Dungeon newDungeon(String path, String gameMode, long seed) {
+<span class="fc" id="L83">        Dungeon dungeon = new Dungeon(DungeonLoader.loadDungeon(&quot;/dungeons/&quot;+path+&quot;.json&quot;, gameMode), String.valueOf(Instant.now().toEpochMilli()), path);</span>
+<span class="fc" id="L84">        dungeon.random = new Random(seed);</span>
+<span class="fc" id="L85">        postLoad(dungeon);</span>
+<span class="fc" id="L86">        return dungeon;</span>
+    }
+
+    /**
+     * @precondition path must be valid
+     * Loads up a new dungeon instance
+     * @return List&lt;EntityResponse&gt;
+     */
+    public static Dungeon loadDungeon(String path) {
+<span class="fc" id="L95">        Dungeon dungeon = new Dungeon(DungeonLoader.loadDungeon(&quot;/saves/&quot;+path+&quot;.json&quot;));</span>
+<span class="fc" id="L96">        postLoad(dungeon);</span>
+<span class="fc" id="L97">        return dungeon;</span>
+    }
+    /**
+     * @precondition path must be valid
+     * Loads up a new dungeon instance
+     * @return List&lt;EntityResponse&gt;
+     */
+    public static Dungeon loadDungeon(JsonObject data, String gameMode) {
+<span class="fc" id="L105">        Dungeon dungeon = new Dungeon(DungeonLoader.loadDungeon(data, gameMode));</span>
+<span class="fc" id="L106">        dungeon.dungeonId = String.valueOf(Instant.now().toEpochMilli());</span>
+<span class="fc" id="L107">        dungeon.dungeonName = &quot;RandomMaze&quot;;</span>
+<span class="fc" id="L108">        postLoad(dungeon);</span>
+<span class="fc" id="L109">        return dungeon;</span>
+    }
+    /**
+     * post setup after loading the map
+     */
+    private static void postLoad(Dungeon dungeon) {
+<span class="fc" id="L115">        dungeon.entities.forEach(Entity::init);</span>
+<span class="fc" id="L116">        dungeon.goals = dungeon.goal.checkGoal();</span>
+
+<span class="pc bpc" id="L118" title="1 of 4 branches missed.">        switch (dungeon.getGameMode()) {</span>
+            case &quot;Standard&quot;:
+<span class="fc" id="L120">                Player.setDefaultBattleStrategy(new StandardStrategy());</span>
+<span class="fc" id="L121">                Player.setDefaultStatus(new DefaultState());</span>
+<span class="fc" id="L122">                break;</span>
+            case &quot;Hard&quot;:
+<span class="fc" id="L124">                Player.setDefaultBattleStrategy(new StandardStrategy());</span>
+<span class="fc" id="L125">                Player.setDefaultStatus(new DefaultState());</span>
+<span class="fc" id="L126">                break;</span>
+            case &quot;Peaceful&quot;:
+<span class="fc" id="L128">                Player.setDefaultBattleStrategy(new AvoidBattleStrategy());</span>
+<span class="fc" id="L129">                Player.setDefaultStatus(new InvisibleState());</span>
+                break;
+        }
+<span class="fc" id="L132">        dungeon.player.setBattleStrategy(Player.getDefaultBattleStrategy());</span>
+<span class="fc" id="L133">        dungeon.player.setStatus(Player.getDefaultStatus());</span>
+<span class="fc" id="L134">    }</span>
+
+    /**
+     * Updates the dungeon by a single tick
+     * @precondition newGame or loadDungeon must be called at least once before calling this function
+     * @param itemUsed
+     * @param movementDirection
+     * @throws IllegalArgumentException
+     * @throws InvalidActionException
+     */
+    public void onTick(String itemUsed, Direction movementDirection) throws IllegalArgumentException, InvalidActionException {
+<span class="fc" id="L145">        tick++;</span>
+<span class="fc" id="L146">        use(itemUsed);</span>
+<span class="fc" id="L147">        player.move(movementDirection);</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">        for (Entity entity : new ArrayList&lt;&gt;(entities)) {</span>
+<span class="fc" id="L149">            entity.onTick();</span>
+<span class="fc" id="L150">        }</span>
+<span class="fc" id="L151">        MovingEntitySpawner.Spawn(gameMode, tick);</span>
+<span class="fc" id="L152">        goals = goal.checkGoal();</span>
+<span class="fc" id="L153">    }</span>
+
+    /**
+     * @precondition newGame or loadDungeon must be called at least once before calling this function
+     * @param entityId
+     * @return
+     * @throws IllegalArgumentException
+     * @throws InvalidActionException
+     */
+    public boolean interact(String entityId) throws IllegalArgumentException, InvalidActionException {
+        
+<span class="fc" id="L164">        Entity entity = EntityUtils.getEntityFromId(entityId);</span>
+        
+<span class="pc bpc" id="L166" title="1 of 2 branches missed.">        if (!(entity instanceof Interactable)) {</span>
+<span class="nc" id="L167">            throw new IllegalArgumentException(&quot;Cannot interact with the given entity&quot;);</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">        } else if (!EntityUtils.isWithinRadius(entity.getPosition(), getPlayer().getPosition(), INTERACT_RADIUS)) {</span>
+<span class="fc" id="L169">            throw new InvalidActionException(&quot;Entity is not within the interact radius of the player&quot;);</span>
+        }
+        
+<span class="fc" id="L172">        Interactable iEntity = (Interactable) entity;</span>
+<span class="fc" id="L173">        boolean interactable = iEntity.interact();</span>
+<span class="fc" id="L174">        goals = goal.checkGoal();</span>
+        
+<span class="fc" id="L176">        return interactable;</span>
+    }
+
+    /**
+     * @precondition newGame or loadDungeon must be called at least once before calling this function
+     * @param buildable
+     * @throws IllegalArgumentException
+     * @throws InvalidActionException
+     */
+    public void build(String buildable) throws IllegalArgumentException, InvalidActionException {
+        
+<span class="fc" id="L187">        Collectable builtEntity = BuildableCreator.BuildableFactory(buildable);</span>
+<span class="fc" id="L188">        player.addItemToInventory(builtEntity);</span>
+        
+<span class="fc" id="L190">    }</span>
+
+    public void use(String id) throws IllegalArgumentException, InvalidActionException {
+<span class="fc" id="L193">        Entity item = EntityUtils.getEntityFromInventoryId(player.getInventory(), id);</span>
+<span class="fc bfc" id="L194" title="All 2 branches covered.">        if (item == null) {</span>
+<span class="fc" id="L195">            return;</span>
+        }
+<span class="pc bpc" id="L197" title="1 of 2 branches missed.">        if (!(item instanceof Usable)) {</span>
+<span class="nc" id="L198">            throw new IllegalArgumentException(&quot;No entity is clicked&quot;);</span>
+        }
+<span class="fc" id="L200">        ((Usable) item).use();</span>
+<span class="fc" id="L201">    }</span>
+    
+    /**
+     * @precondition newGame or loadDungeon must be called at least once before calling this function
+     * @postcondition the current instance of the dungeon
+     * @return
+     */
+    public static Dungeon getInstance() {
+<span class="fc" id="L209">        return dungeon;</span>
+    }
+
+    /**
+     * Gets the dungeon response for this dungeon
+     * @return DungeonResponse
+     */
+    public DungeonResponse getDungeonResponse() {
+<span class="fc" id="L217">        return new DungeonResponse(dungeonId, dungeonName, getEntityResponse(), getItemResponse(), BuildableCreator.generateBuildables(), goals, getAnimationResponse());</span>
+    }
+
+    /**
+     * Gets the Animation response for all entities
+     * @return List&lt;ItemResponse&gt;
+     */
+    private List&lt;AnimationQueue&gt; getAnimationResponse() {
+<span class="fc" id="L225">        List&lt;AnimationQueue&gt; resp = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L226">        entities.stream().forEach(e -&gt; resp.addAll(e.getAnimationResponse()));</span>
+<span class="fc" id="L227">        return resp;</span>
+    }
+    /**
+     * Gets the item response for the player's inventory
+     * @return List&lt;ItemResponse&gt;
+     */
+    private List&lt;ItemResponse&gt; getItemResponse() {
+<span class="fc" id="L234">        List&lt;ItemResponse&gt; resp = new ArrayList&lt;ItemResponse&gt;();</span>
+<span class="fc" id="L235">        player.getInventory().stream().forEach(e-&gt;resp.add(e.getItemResponse()));</span>
+<span class="fc" id="L236">        return resp;</span>
+    }
+
+    /**
+     * Gets the EntityResponse for all entities in the dungeon
+     * @return List&lt;EntityResponse&gt;
+     */
+    private List&lt;EntityResponse&gt; getEntityResponse() {
+<span class="fc" id="L244">        List&lt;EntityResponse&gt; responses = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L245">        entities.forEach(e -&gt; responses.add(e.getEntityResponse()));</span>
+<span class="fc" id="L246">        return responses;</span>
+    }
+
+    /**
+     * @return int return the height
+     */
+    public int getHeight() {
+<span class="nc" id="L253">        return height;</span>
+    }
+
+    /**
+     * @return int return the width
+     */
+    public int getWidth() {
+<span class="nc" id="L260">        return width;</span>
+    }
+
+    /**
+     * @return String return the dungeonName
+     */
+    public String getDungeonName() {
+<span class="fc" id="L267">        return dungeonName;</span>
+    }
+
+    /**
+     * @return String return the dungeonId
+     */
+    public String getDungeonId() {
+<span class="nc" id="L274">        return dungeonId;</span>
+    }
+
+    /**
+     * @return String return the gameMode
+     */
+    public String getGameMode() {
+<span class="fc" id="L281">        return gameMode;</span>
+    }
+
+    /**
+     * @return List&lt;Entity&gt; return the entities
+     */
+    public List&lt;Entity&gt; getEntities() {
+<span class="fc" id="L288">        return entities;</span>
+    }
+
+    /**
+     * removes entity from the dungeon
+     * @param e
+     */
+    public void removeEntity(Entity e) {
+<span class="fc" id="L296">        entities.remove(e);</span>
+<span class="fc" id="L297">    }</span>
+
+    /**
+     * adds entity to the dungeon
+     * @param e
+     */
+    public void addEntity(Entity e) {
+<span class="fc" id="L304">        entities.add(e);</span>
+<span class="fc" id="L305">    }</span>
+
+    /**
+     * @precondition the dungeon must have an instance
+     * returns the player
+     * @return Player
+     */
+    public Player getPlayer() {
+<span class="fc" id="L313">        return player;</span>
+    }
+    /**
+     * @precondition the dungeon must have an instance
+     * returns the random
+     * @return Random
+     */
+    public Random getRandom() {
+<span class="fc" id="L321">        return random;</span>
+    }
+    /**
+     * @precondition the dungeon must have an instance
+     * returns the goal
+     * @return goal
+     */
+    public Goal getGoal() {
+<span class="fc" id="L329">        return goal;</span>
+    }
+
+    public Position getEntry() {
+<span class="fc" id="L333">        return entry;</span>
+    }
+
+    /**
+     * returns the player's inventory
+     * @return inventory
+     */
+    public List&lt;Collectable&gt; getInventory() {
+<span class="fc" id="L341">        return getPlayer().getInventory();</span>
+        
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

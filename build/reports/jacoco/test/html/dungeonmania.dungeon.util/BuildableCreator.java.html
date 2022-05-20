@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BuildableCreator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project</a> &gt; <a href="index.source.html" class="el_package">dungeonmania.dungeon.util</a> &gt; <span class="el_source">BuildableCreator.java</span></div><h1>BuildableCreator.java</h1><pre class="source lang-java linenums">package dungeonmania.dungeon.util;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import dungeonmania.entities.behaviours.Collectable;
+import dungeonmania.entities.bow.Bow;
+import dungeonmania.entities.midnight_armour.MidnightArmour;
+import dungeonmania.entities.sceptre.Sceptre;
+import dungeonmania.entities.shield.Shield;
+import dungeonmania.exceptions.InvalidActionException;
+
+<span class="nc" id="L13">public class BuildableCreator {</span>
+    
+    /**
+     * Constructs buildable entities
+     * @param buildable name of the entity to build
+     * @return the built entity as a collectable
+     * @throws IllegalArgumentException if the name of the entity to build is invalid
+     * @throws InvalidActionException if the player doesn't have sufficient items in their inventory to build the entity
+     */
+    public static Collectable BuildableFactory(String buildable) throws IllegalArgumentException, InvalidActionException {
+
+<span class="fc bfc" id="L24" title="All 5 branches covered.">        switch (buildable) {</span>
+
+            case &quot;bow&quot;:
+                
+<span class="fc" id="L28">                return new Bow();</span>
+                
+            case &quot;shield&quot;:
+
+<span class="fc" id="L32">                return new Shield();</span>
+
+            case &quot;sceptre&quot;:
+                
+<span class="fc" id="L36">                return new Sceptre();</span>
+                
+            case &quot;midnight_armour&quot;:
+
+<span class="fc" id="L40">                return new MidnightArmour();</span>
+            
+            default:
+
+<span class="fc" id="L44">                throw new IllegalArgumentException(&quot;'Buildable' is not a buildable item&quot;);</span>
+                
+        }
+
+    }
+
+    /**
+     * Generates a list of entities that can be built from items in the player's inventory
+     * @return list of buildable entities as strings
+     */
+    public static List&lt;String&gt; generateBuildables() {
+
+<span class="fc" id="L56">        List&lt;String&gt; buildables = new ArrayList&lt;String&gt;();</span>
+
+<span class="fc bfc" id="L58" title="All 2 branches covered.">        if (Bow.isBuildable()) {</span>
+
+<span class="fc" id="L60">            buildables.add(&quot;bow&quot;);</span>
+
+        }
+        
+<span class="fc bfc" id="L64" title="All 2 branches covered.">        if (Shield.isBuildable()) {</span>
+
+<span class="fc" id="L66">            buildables.add(&quot;shield&quot;);</span>
+
+        }
+
+<span class="fc bfc" id="L70" title="All 2 branches covered.">        if (Sceptre.isBuildable()) {</span>
+
+<span class="fc" id="L72">            buildables.add(&quot;sceptre&quot;);</span>
+
+        }
+        
+<span class="fc bfc" id="L76" title="All 2 branches covered.">        if (MidnightArmour.isBuildable()) {</span>
+
+<span class="fc" id="L78">            buildables.add(&quot;midnight_armour&quot;);</span>
+
+        }
+
+<span class="fc" id="L82">        return buildables;</span>
+
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

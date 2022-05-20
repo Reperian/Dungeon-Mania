@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MidnightArmour.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project</a> &gt; <a href="index.source.html" class="el_package">dungeonmania.entities.midnight_armour</a> &gt; <span class="el_source">MidnightArmour.java</span></div><h1>MidnightArmour.java</h1><pre class="source lang-java linenums">package dungeonmania.entities.midnight_armour;
+
+import java.util.List;
+
+import dungeonmania.dungeon.Dungeon;
+import dungeonmania.entities.Entity;
+import dungeonmania.entities.armour.Armour;
+import dungeonmania.entities.behaviours.Buildable;
+import dungeonmania.entities.behaviours.Collectable;
+import dungeonmania.entities.behaviours.Defence;
+import dungeonmania.entities.behaviours.Weapon;
+import dungeonmania.entities.moving_entities.ZombieToast;
+import dungeonmania.entities.moving_entities.util.InventoryUtils;
+import dungeonmania.entities.player.Player;
+import dungeonmania.entities.sunstone.SunStone;
+import dungeonmania.entities.util.EntityUtils;
+import dungeonmania.exceptions.InvalidActionException;
+import dungeonmania.response.models.ItemResponse;
+import dungeonmania.util.Direction;
+import dungeonmania.util.Position;
+
+public class MidnightArmour extends Entity implements Collectable, Buildable, Defence, Weapon {
+    
+    private static final String TYPE = &quot;midnight_armour&quot;;
+    public static final float DAMAGE = 2;
+    public static final int HIT_MULTIPLIER = 1;
+    private static final float DAMAGE_REDUCTION = 0.5f;
+    private int durability;
+
+    /**
+     * Constructs a midnight armour if a midnight armour can be built from items in the player's inventory
+     */
+    public MidnightArmour() {
+<span class="fc" id="L34">        super(TYPE, new Position(0,0));</span>
+<span class="fc" id="L35">        build();</span>
+<span class="fc" id="L36">        this.durability = 5;</span>
+<span class="fc" id="L37">    }</span>
+
+    /**
+     * Constructs a midnight armour, no need to check the player's inventory as this is only used when the midnight armour is loaded from a json map
+     * @param position position the midnight armour is spawned at on the map
+     */
+    public MidnightArmour(Position position) {
+<span class="fc" id="L44">        super(TYPE, position);</span>
+<span class="fc" id="L45">        this.durability = 5;</span>
+<span class="fc" id="L46">    }</span>
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+<span class="fc" id="L52">    public void onTick() {}</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean onOverlap(Entity entity, Direction dir) {
+<span class="fc" id="L59">        return collect();         </span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean collect() {
+<span class="fc" id="L67">        Dungeon.getInstance().getPlayer().addItemToInventory(this);</span>
+<span class="fc" id="L68">        Dungeon.getInstance().removeEntity(this);</span>
+<span class="fc" id="L69">        return true;</span>
+    }
+
+    /**
+     * Builds the midnight armour if the player has sufficient items to build it by removing recipe items from the player's inventory
+     * @throws InvalidActionException if there aren't enough Collectables to build the bos
+     */
+    public void build() throws InvalidActionException {
+
+<span class="fc" id="L78">        Player p = Dungeon.getInstance().getPlayer();</span>
+
+<span class="fc bfc" id="L80" title="All 2 branches covered.">        if (isBuildable()) {</span>
+
+<span class="fc" id="L82">            p.removeNumOfTypeFromInventory(1, Armour.class);</span>
+<span class="fc" id="L83">            p.removeNumOfTypeFromInventory(1, SunStone.class);</span>
+
+        } else {
+<span class="fc" id="L86">            throw new InvalidActionException(&quot;Insufficient Items to build Midnight Armour&quot;);</span>
+        }
+
+<span class="fc" id="L89">    }</span>
+    
+    /**
+     * Checks if a midnight armour is buildable from the items in the player's inventory
+     * @return whether or not a midnight armour is buildable
+     */
+    public static boolean isBuildable() {
+
+<span class="fc" id="L97">        Dungeon dungeon = Dungeon.getInstance();</span>
+<span class="fc" id="L98">        List&lt;Entity&gt; dungeon_entities = dungeon.getEntities();</span>
+<span class="fc" id="L99">        Player player = dungeon.getPlayer();</span>
+
+<span class="fc" id="L101">        int numArmour = EntityUtils.getEntitiesFromInventory(player.getInventory(), Armour.class).size();</span>
+<span class="fc" id="L102">        int numZombieToast = EntityUtils.getEntitiesOfTypeList(dungeon_entities, ZombieToast.class).size();</span>
+<span class="fc" id="L103">        int numSunStone = EntityUtils.getEntitiesFromInventory(player.getInventory(), SunStone.class).size(); </span>
+
+<span class="fc bfc" id="L105" title="All 6 branches covered.">        return (numArmour &gt;= 1 &amp;&amp; numSunStone &gt;= 1 &amp;&amp; numZombieToast == 0);</span>
+
+    }
+
+    /**
+     * @return int returns the durability
+     */
+    public int getDurability() {
+<span class="nc" id="L113">        return durability;</span>
+    }
+    /**
+     * Reduces durability of midnight armour by amount
+     * @param amount
+     */
+    @Override
+    public void reduceDurability(int amount) {
+<span class="fc" id="L121">        durability -= amount;</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">        if (durability &lt;= 0) {</span>
+<span class="fc" id="L123">            InventoryUtils.removeItemIdFromInventory(Dungeon.getInstance().getPlayer().getInventory(), getId());</span>
+        }
+<span class="fc" id="L125">    }</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ItemResponse getItemResponse() {
+<span class="fc" id="L132">        return new ItemResponse(getId(), getType());</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+<span class="fc" id="L139">    public void init() {}</span>
+
+    /**
+     * @param durability the durability to set
+     */
+    public void setDurability(int durability) {
+<span class="nc" id="L145">        this.durability = durability;</span>
+<span class="nc" id="L146">    }</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public float getDamage() {
+<span class="fc" id="L153">        return DAMAGE;</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getHitMultiplier() {
+<span class="fc" id="L161">        return HIT_MULTIPLIER;</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public float getFlatDefence() {
+
+<span class="fc" id="L170">        return 0;</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public float getPercentageDefence() {
+<span class="fc" id="L178">        return DAMAGE_REDUCTION;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

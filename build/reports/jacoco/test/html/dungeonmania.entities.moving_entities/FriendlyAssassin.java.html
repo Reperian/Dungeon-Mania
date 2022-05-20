@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FriendlyAssassin.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project</a> &gt; <a href="index.source.html" class="el_package">dungeonmania.entities.moving_entities</a> &gt; <span class="el_source">FriendlyAssassin.java</span></div><h1>FriendlyAssassin.java</h1><pre class="source lang-java linenums">package dungeonmania.entities.moving_entities;
+
+import dungeonmania.dungeon.Dungeon;
+import dungeonmania.entities.player.Player;
+import dungeonmania.movement.FollowMovement;
+import dungeonmania.util.Position;
+
+public class FriendlyAssassin extends FriendlyMercenary {
+
+    private final static String TYPE = &quot;assassin_friendly&quot;;
+    private final static int MAX_HEALTH = 5;
+
+    public FriendlyAssassin(Position position) {
+<span class="fc" id="L14">        super(TYPE, position);</span>
+<span class="fc" id="L15">        setHealth(MAX_HEALTH);</span>
+<span class="fc" id="L16">        setDamage(20);</span>
+<span class="fc" id="L17">        movement = new FollowMovement();</span>
+<span class="fc" id="L18">        defaultMovement = movement;</span>
+<span class="fc" id="L19">    }</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void friendly_period_tick() {
+        
+<span class="fc" id="L27">        setFriendly_period(getFriendly_period() -1);</span>
+
+<span class="fc bfc" id="L29" title="All 2 branches covered.">        if (getFriendly_period() &lt;= 0) {</span>
+
+<span class="fc" id="L31">            Dungeon dungeon = Dungeon.getInstance();</span>
+<span class="fc" id="L32">            Player player = dungeon.getPlayer();</span>
+
+<span class="fc" id="L34">            dungeon.removeEntity(this);</span>
+<span class="fc" id="L35">            player.removeAlly(this);</span>
+<span class="fc" id="L36">            Assassin enemy = new Assassin(new Position(getPosition().getX(), getPosition().getY(), 2));</span>
+<span class="fc" id="L37">            dungeon.addEntity(enemy); </span>
+
+        }
+
+<span class="fc" id="L41">    }</span>
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

@@ -1,0 +1,29 @@
+{ 
+    "width": 10,
+    "height": 10,
+    "entities": [
+      {
+        "x": 2,
+        "y": 5,
+        "type": "player"
+      },
+      {
+        "x": 1,
+        "y": 5,
+        "type": "sword"
+      },
+      {
+        "x": 3,
+        "y": 5,
+        "type": "anduril"
+      },
+      {
+        "x": 5,
+        "y": 5,
+        "type": "assassin"
+      }
+    ],
+    "goal-condition": {
+      "goal": "exit"
+    }
+}

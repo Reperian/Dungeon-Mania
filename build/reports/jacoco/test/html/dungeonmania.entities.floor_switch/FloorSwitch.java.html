@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FloorSwitch.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project</a> &gt; <a href="index.source.html" class="el_package">dungeonmania.entities.floor_switch</a> &gt; <span class="el_source">FloorSwitch.java</span></div><h1>FloorSwitch.java</h1><pre class="source lang-java linenums">package dungeonmania.entities.floor_switch;
+
+import java.util.List;
+import dungeonmania.entities.Entity;
+import dungeonmania.entities.util.EntityUtils;
+import dungeonmania.entities.boulder.Boulder;
+import dungeonmania.util.Direction;
+import dungeonmania.util.Position;
+
+public class FloorSwitch extends Entity {
+    private static final String TYPE = &quot;switch&quot;;
+<span class="fc" id="L12">    private boolean triggered = false;</span>
+    
+    /**
+     * Constructor for FloorSwitch
+     * @param position the dungeon position of the switch
+     */
+    public FloorSwitch(Position position) {
+<span class="fc" id="L19">        super(TYPE, position);</span>
+<span class="fc" id="L20">    }</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onTick() {
+        // check if a boulder is on top of it
+<span class="fc" id="L28">        List&lt;Entity&gt; entities = EntityUtils.getEntitiesAtPosition(this.getPosition());</span>
+       
+<span class="fc" id="L30">        List&lt;Boulder&gt; boulders = EntityUtils.getEntitiesToTypeList(entities, Boulder.class);</span>
+        
+        // if there is an entity on a switch at that entity is a boulder, trigger switch
+<span class="fc bfc" id="L33" title="All 2 branches covered.">        if (boulders.size() == 1) {</span>
+<span class="fc" id="L34">            setTriggerOn();</span>
+        } else {
+<span class="fc" id="L36">            setTriggerOff();</span>
+        }
+<span class="fc" id="L38">    }</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean onOverlap(Entity _entity, Direction dir) {
+<span class="fc" id="L45">        return true; </span>
+    }
+
+    /**
+     * Checks whether the switch is triggered or not
+     * @return boolean return if the switch is triggered
+     */
+    public boolean isTriggered() {
+<span class="fc" id="L53">        return triggered;</span>
+    }
+
+    /**
+     * Toggles the trigger status to on
+     */
+    private void setTriggerOn() {
+<span class="fc" id="L60">        triggered = true;</span>
+<span class="fc" id="L61">    }</span>
+
+    /**
+     * Toggles the trigger status to off
+     */
+    private void setTriggerOff() {
+<span class="fc" id="L67">        triggered = false;</span>
+<span class="fc" id="L68">    }</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+<span class="fc" id="L74">    public void init() {}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

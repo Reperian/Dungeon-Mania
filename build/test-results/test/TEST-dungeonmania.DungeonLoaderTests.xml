@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dungeonmania.DungeonLoaderTests" tests="11" skipped="0" failures="0" errors="0" timestamp="2021-11-14T12:41:50" hostname="DESKTOP-C1T19SJ" time="0.132">
+  <properties/>
+  <testcase name="testNewGameInvalidDungeonName()" classname="dungeonmania.DungeonLoaderTests" time="0.002"/>
+  <testcase name="testNewGameSimple()" classname="dungeonmania.DungeonLoaderTests" time="0.005"/>
+  <testcase name="testLoadGameGoals()" classname="dungeonmania.DungeonLoaderTests" time="0.029"/>
+  <testcase name="testLoadGameSimple()" classname="dungeonmania.DungeonLoaderTests" time="0.011"/>
+  <testcase name="testNewGameCorrectEntityPosition()" classname="dungeonmania.DungeonLoaderTests" time="0.003"/>
+  <testcase name="testSaveLoadDoors()" classname="dungeonmania.DungeonLoaderTests" time="0.012"/>
+  <testcase name="testNewGameCorrectEntityAmount()" classname="dungeonmania.DungeonLoaderTests" time="0.003"/>
+  <testcase name="testSaveLoadPlayerInventory()" classname="dungeonmania.DungeonLoaderTests" time="0.041"/>
+  <testcase name="testNewGameInvalidGamemode()" classname="dungeonmania.DungeonLoaderTests" time="0.002"/>
+  <testcase name="testSaveLoadPlayerMove()" classname="dungeonmania.DungeonLoaderTests" time="0.013"/>
+  <testcase name="testSaveGameSimple()" classname="dungeonmania.DungeonLoaderTests" time="0.007"/>
+  <system-out><![CDATA[player
+key_1
+door_locked_1
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

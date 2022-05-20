@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DeadEnemy.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project</a> &gt; <a href="index.source.html" class="el_package">dungeonmania.entities.moving_entities</a> &gt; <span class="el_source">DeadEnemy.java</span></div><h1>DeadEnemy.java</h1><pre class="source lang-java linenums">package dungeonmania.entities.moving_entities;
+
+import java.util.Arrays;
+import java.util.List;
+
+import dungeonmania.dungeon.Dungeon;
+import dungeonmania.entities.Entity;
+import dungeonmania.response.models.AnimationQueue;
+import dungeonmania.util.Direction;
+import dungeonmania.util.Position;
+
+public class DeadEnemy extends MovingEntity {
+    private String type;
+
+    public DeadEnemy(Entity entity, Position position) {
+<span class="fc" id="L16">        super(&quot;none&quot;, position);</span>
+<span class="fc" id="L17">        type = entity.getType();</span>
+<span class="fc" id="L18">    }</span>
+    @Override
+    public void onTick() {
+<span class="fc" id="L21">        Dungeon.getInstance().getEntities().remove(this);     </span>
+<span class="fc" id="L22">    }</span>
+
+    @Override
+    public boolean onOverlap(Entity entity, Direction dir) {
+        // TODO Auto-generated method stub
+<span class="fc" id="L27">        return false;</span>
+    }
+
+    @Override
+    public void init() {
+        // TODO Auto-generated method stub
+        
+<span class="nc" id="L34">    }</span>
+
+    @Override
+    public List&lt;AnimationQueue&gt; getAnimationResponse() {
+<span class="fc bfc" id="L38" title="All 2 branches covered.">        if (type == &quot;spider&quot;) {</span>
+<span class="fc" id="L39">            animationBuffer.add(new AnimationQueue(&quot;PostTick&quot;, getId(), Arrays.asList(&quot;translate-x 1, over 0.5s&quot;, &quot;tint 0xff0000&quot;, &quot;sprite spider&quot;), false, -1));</span>
+        }
+<span class="fc bfc" id="L41" title="All 2 branches covered.">        if (type == &quot;zombie_toast&quot;) {</span>
+<span class="fc" id="L42">            animationBuffer.add(new AnimationQueue(&quot;PostTick&quot;, getId(), Arrays.asList(&quot;translate-x 1, over 0.5s&quot;, &quot;tint 0xff0000&quot;, &quot;sprite zombie_toast&quot;), false, -1));</span>
+        }
+<span class="fc bfc" id="L44" title="All 2 branches covered.">        if (type == &quot;mercenary&quot;) {</span>
+<span class="fc" id="L45">            animationBuffer.add(new AnimationQueue(&quot;PostTick&quot;, getId(), Arrays.asList(&quot;translate-x 1, over 0.5s&quot;, &quot;tint 0xff0000&quot;, &quot;sprite mercenary&quot;), false, -1));</span>
+        }
+<span class="fc bfc" id="L47" title="All 2 branches covered.">        if (type == &quot;assassin&quot;) {</span>
+<span class="fc" id="L48">            animationBuffer.add(new AnimationQueue(&quot;PostTick&quot;, getId(), Arrays.asList(&quot;translate-x 1, over 0.5s&quot;, &quot;tint 0xff0000&quot;, &quot;sprite assassin&quot;), false, -1));</span>
+        }
+<span class="pc bpc" id="L50" title="1 of 2 branches missed.">        if (type == &quot;hydra&quot;) {</span>
+<span class="nc" id="L51">            animationBuffer.add(new AnimationQueue(&quot;PostTick&quot;, getId(), Arrays.asList(&quot;translate-x 1, over 0.5s&quot;, &quot;tint 0xff0000&quot;, &quot;sprite hydra&quot;), false, -1));</span>
+        }
+<span class="fc" id="L53">        return super.getAnimationResponse();</span>
+    }
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

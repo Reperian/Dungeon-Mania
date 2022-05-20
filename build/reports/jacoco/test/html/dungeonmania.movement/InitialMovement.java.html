@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InitialMovement.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project</a> &gt; <a href="index.source.html" class="el_package">dungeonmania.movement</a> &gt; <span class="el_source">InitialMovement.java</span></div><h1>InitialMovement.java</h1><pre class="source lang-java linenums">package dungeonmania.movement;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import dungeonmania.dungeon.Dungeon;
+import dungeonmania.entities.Entity;
+import dungeonmania.entities.boulder.Boulder;
+import dungeonmania.entities.moving_entities.Spider;
+import dungeonmania.util.Direction;
+import dungeonmania.util.Position;
+
+<span class="fc" id="L13">public class InitialMovement implements MovementStrategy {</span>
+    @Override
+    //moves up one tick then switches movement to circular
+    public void move(Entity entity) {
+<span class="fc" id="L17">        final Position p = entity.getPosition().translateBy(Direction.UP);</span>
+<span class="fc bfc" id="L18" title="All 2 branches covered.">        if (checkMove(p) == true) {</span>
+<span class="fc" id="L19">            moveAnimation(entity, p);</span>
+<span class="fc" id="L20">            entity.setPosition(entity.getPosition().translateBy(Direction.UP));</span>
+<span class="fc" id="L21">            Spider s = (Spider) entity;</span>
+<span class="fc" id="L22">            s.setStrategy(new CircularMovement());</span>
+        }
+<span class="fc" id="L24">    }</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean checkMove(Position position) {
+<span class="fc" id="L31">        List&lt;Entity&gt; eList = Dungeon.getInstance().getEntities();</span>
+<span class="fc" id="L32">        List&lt;Entity&gt; entities = eList.stream().filter(e -&gt; (e.getPosition().equals(position))).collect(Collectors.toList());</span>
+
+<span class="fc bfc" id="L34" title="All 2 branches covered.">        for (Entity e : entities) {</span>
+<span class="fc bfc" id="L35" title="All 2 branches covered.">            if (e instanceof Boulder) {</span>
+<span class="fc" id="L36">                return false;</span>
+            }
+<span class="fc" id="L38">        }</span>
+<span class="fc" id="L39">        return true;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

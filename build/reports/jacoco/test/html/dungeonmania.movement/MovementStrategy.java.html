@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MovementStrategy.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project</a> &gt; <a href="index.source.html" class="el_package">dungeonmania.movement</a> &gt; <span class="el_source">MovementStrategy.java</span></div><h1>MovementStrategy.java</h1><pre class="source lang-java linenums">package dungeonmania.movement;
+
+import dungeonmania.entities.Entity;
+import dungeonmania.entities.moving_entities.MovingEntity;
+import dungeonmania.util.Direction;
+import dungeonmania.util.Position;
+
+public interface MovementStrategy {
+    /**
+     * 
+     * @param entity
+     */
+    public void move(Entity entity);
+
+    /**
+     * 
+     * @param position
+     * @return
+     */
+    public boolean checkMove(Position position);
+
+    public default void moveAnimation(Entity entity, Position newPos) {
+<span class="fc" id="L23">        Position position = Position.calculatePositionBetween(entity.getPosition(), newPos);</span>
+<span class="fc" id="L24">        MovingEntity m = (MovingEntity) entity;</span>
+<span class="fc bfc" id="L25" title="All 2 branches covered.">        if (position.getX() == -1) {</span>
+<span class="fc" id="L26">            m.setMoved(Direction.LEFT);</span>
+        }
+<span class="fc bfc" id="L28" title="All 2 branches covered.">        if (position.getX() == 1) {</span>
+<span class="fc" id="L29">            m.setMoved(Direction.RIGHT);</span>
+        }
+<span class="fc bfc" id="L31" title="All 2 branches covered.">        if (position.getY() == -1) {</span>
+<span class="fc" id="L32">            m.setMoved(Direction.UP);</span>
+        } 
+<span class="fc bfc" id="L34" title="All 2 branches covered.">        if (position.getY() == 1) {</span>
+<span class="fc" id="L35">            m.setMoved(Direction.DOWN);</span>
+        }   
+<span class="fc" id="L37">    }</span>
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

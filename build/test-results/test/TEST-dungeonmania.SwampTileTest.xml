@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dungeonmania.SwampTileTest" tests="17" skipped="0" failures="0" errors="0" timestamp="2021-11-14T12:41:51" hostname="DESKTOP-C1T19SJ" time="0.061">
+  <properties/>
+  <testcase name="testPlayerNoEffect_Turn()" classname="dungeonmania.SwampTileTest" time="0.002"/>
+  <testcase name="testPlayerNoEffect_Straight()" classname="dungeonmania.SwampTileTest" time="0.002"/>
+  <testcase name="testAssassinThroughTile()" classname="dungeonmania.SwampTileTest" time="0.004"/>
+  <testcase name="testAssassinFriendlyThroughTile_MF10()" classname="dungeonmania.SwampTileTest" time="0.006"/>
+  <testcase name="testFriendlyMercenaryThroughTile()" classname="dungeonmania.SwampTileTest" time="0.004"/>
+  <testcase name="testHydraThroughTileMF10()" classname="dungeonmania.SwampTileTest" time="0.003"/>
+  <testcase name="TestMercenaryRunAwaySwampTileDuringInvincibilityState()" classname="dungeonmania.SwampTileTest" time="0.004"/>
+  <testcase name="testSpiderThroughTile()" classname="dungeonmania.SwampTileTest" time="0.002"/>
+  <testcase name="testMercenaryThroughTile_MF10()" classname="dungeonmania.SwampTileTest" time="0.005"/>
+  <testcase name="testAssassinFriendlyThroughTile()" classname="dungeonmania.SwampTileTest" time="0.004"/>
+  <testcase name="testAssassinThroughTile_MF10()" classname="dungeonmania.SwampTileTest" time="0.004"/>
+  <testcase name="testFriendlyMercenaryThroughTile_MF10()" classname="dungeonmania.SwampTileTest" time="0.005"/>
+  <testcase name="testMercenaryThroughTile()" classname="dungeonmania.SwampTileTest" time="0.004"/>
+  <testcase name="testZombieThroughTileMF10()" classname="dungeonmania.SwampTileTest" time="0.002"/>
+  <testcase name="testHydraThroughTile()" classname="dungeonmania.SwampTileTest" time="0.002"/>
+  <testcase name="testSpiderThroughTileMF10()" classname="dungeonmania.SwampTileTest" time="0.002"/>
+  <testcase name="testZombieThroughTile()" classname="dungeonmania.SwampTileTest" time="0.002"/>
+  <system-out><![CDATA[5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

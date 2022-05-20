@@ -1,0 +1,102 @@
+{   
+  "entities": [
+    {
+      "x": 5,
+      "y": 5,
+      "type": "player"
+    },
+    {
+      "x": 6,
+      "y": 5,
+      "type": "wood"
+    },
+    {
+      "x": 7,
+      "y": 5,
+      "type": "treasure"
+    },
+    {
+      "x": 8,
+      "y": 5,
+      "type": "sun_stone"
+    },
+    {
+      "x": 14,
+      "y": 5,
+      "type": "mercenary"
+    },
+    {
+      "x": 5,
+      "y": 6,
+      "type": "wood"
+    },
+    {
+      "x": 5,
+      "y": 7,
+      "type": "key",
+      "key": 1
+    },
+    {
+      "x": 5,
+      "y": 8,
+      "type": "sun_stone"
+    },
+    {
+      "x": 5,
+      "y": 14,
+      "type": "assassin"
+    },
+    {
+      "x": 4,
+      "y": 5,
+      "type": "arrow"
+    },
+    {
+      "x": 3,
+      "y": 5,
+      "type": "arrow"
+    },
+    {
+      "x": 2,
+      "y": 5,
+      "type": "key",
+      "key": 1
+    },
+    {
+      "x": 1,
+      "y": 5,
+      "type": "sun_stone"
+    },
+    {
+      "x": 0,
+      "y": 5,
+      "type": "sceptre"
+    },
+    {
+      "x": 5,
+      "y": 4,
+      "type": "arrow"
+    },
+    {
+      "x": 5,
+      "y": 3,
+      "type": "arrow"
+    },
+    {
+      "x": 5,
+      "y": 2,
+      "type": "treasure"
+    },
+    {
+      "x": 5,
+      "y": 1,
+      "type": "sun_stone"
+    }
+
+  ],
+
+  "goal-condition": {
+      "goal": "exit"
+  }
+
+}

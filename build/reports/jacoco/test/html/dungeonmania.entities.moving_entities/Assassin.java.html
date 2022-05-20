@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Assassin.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project</a> &gt; <a href="index.source.html" class="el_package">dungeonmania.entities.moving_entities</a> &gt; <span class="el_source">Assassin.java</span></div><h1>Assassin.java</h1><pre class="source lang-java linenums">package dungeonmania.entities.moving_entities;
+
+import java.util.List;
+
+import dungeonmania.dungeon.Dungeon;
+import dungeonmania.entities.behaviours.Collectable;
+import dungeonmania.entities.player.Player;
+import dungeonmania.entities.sceptre.Sceptre;
+import dungeonmania.entities.the_one_ring.TheOneRing;
+import dungeonmania.entities.treasure.Treasure;
+import dungeonmania.entities.util.EntityUtils;
+import dungeonmania.movement.FollowMovement;
+import dungeonmania.util.Position;
+
+public class Assassin extends Mercenary {
+
+    private final static String TYPE = &quot;assassin&quot;;
+    private final static int MAX_HEALTH = 5;
+
+    public Assassin(Position position) {
+<span class="fc" id="L21">        super(TYPE, position);</span>
+<span class="fc" id="L22">        setHealth(MAX_HEALTH);</span>
+<span class="fc" id="L23">        setDamage(20);</span>
+<span class="fc" id="L24">        movement = new FollowMovement();</span>
+<span class="fc" id="L25">        defaultMovement = movement;</span>
+<span class="fc" id="L26">    }</span>
+
+    @Override
+    //assassins turn into friendly assassins if interacted with treasure and a one ring in inventory
+    public boolean interact() {
+<span class="fc" id="L31">        Dungeon dungeon = Dungeon.getInstance();</span>
+<span class="fc" id="L32">        Player player = dungeon.getPlayer();</span>
+<span class="fc" id="L33">        List&lt;Collectable&gt; treasures = EntityUtils.getCollectablesFromInventory(player.getInventory(), Treasure.class);</span>
+<span class="fc" id="L34">        List&lt;Collectable&gt; oneRing = EntityUtils.getCollectablesFromInventory(player.getInventory(), TheOneRing.class);</span>
+<span class="fc" id="L35">        List&lt;Collectable&gt; sceptres = EntityUtils.getCollectablesFromInventory(player.getInventory(), Sceptre.class);</span>
+<span class="fc bfc" id="L36" title="All 4 branches covered.">        if (treasures.size() &gt; 0 &amp;&amp; oneRing.size() &gt; 0) {</span>
+<span class="fc" id="L37">            player.removeNumOfTypeFromInventory(1, Treasure.class);</span>
+<span class="fc" id="L38">            player.removeNumOfTypeFromInventory(1, TheOneRing.class);</span>
+<span class="fc" id="L39">            dungeon.removeEntity(this);</span>
+<span class="fc" id="L40">            FriendlyAssassin ally = new FriendlyAssassin(new Position(getPosition().getX(), getPosition().getY(), 2));</span>
+<span class="fc" id="L41">            dungeon.addEntity(ally);</span>
+<span class="fc" id="L42">            player.addAlly(ally);</span>
+<span class="fc" id="L43">            return true;</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">        } else if (sceptres.size() &gt; 0) {</span>
+<span class="fc" id="L45">            player.removeNumOfTypeFromInventory(1, Sceptre.class);</span>
+<span class="fc" id="L46">            dungeon.removeEntity(this);</span>
+<span class="fc" id="L47">            FriendlyAssassin ally = new FriendlyAssassin(new Position(getPosition().getX(), getPosition().getY(), 2));</span>
+<span class="fc" id="L48">            ally.setFriendly_period(10);</span>
+<span class="fc" id="L49">            dungeon.addEntity(ally);</span>
+<span class="fc" id="L50">            player.addAlly(ally);</span>
+<span class="fc" id="L51">            return true;</span>
+
+        }
+<span class="fc" id="L54">        return false;</span>
+    }
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

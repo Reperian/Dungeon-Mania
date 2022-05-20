@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CircularMovement.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project</a> &gt; <a href="index.source.html" class="el_package">dungeonmania.movement</a> &gt; <span class="el_source">CircularMovement.java</span></div><h1>CircularMovement.java</h1><pre class="source lang-java linenums">package dungeonmania.movement;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import dungeonmania.dungeon.Dungeon;
+import dungeonmania.entities.Entity;
+import dungeonmania.entities.boulder.Boulder;
+import dungeonmania.entities.moving_entities.Spider;
+import dungeonmania.util.Position;
+
+public class CircularMovement implements MovementStrategy {
+
+<span class="fc" id="L14">    private int increment = 1;</span>
+<span class="fc" id="L15">    private int initialPosition = 1;</span>
+
+<span class="fc" id="L17">    public CircularMovement () {}</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    //Moves in a circular pattern clockwise
+    public void move(Entity entity) {
+<span class="fc" id="L25">        Spider s = (Spider) entity;</span>
+<span class="fc" id="L26">        List&lt;Position&gt; adjacent = s.getAdjacent();</span>
+
+        //increments the position
+        // 0 1 2
+        // 7 p 3
+        // 6 5 4
+<span class="fc" id="L32">        int newPosition = initialPosition + increment;</span>
+
+        //bounds position between 0-7
+<span class="fc bfc" id="L35" title="All 2 branches covered.">        if (newPosition &gt; 7) {</span>
+<span class="fc" id="L36">            newPosition -= 8;</span>
+        }
+<span class="fc bfc" id="L38" title="All 2 branches covered.">        else if (newPosition &lt; 0) {</span>
+<span class="fc" id="L39">            newPosition += 8;</span>
+        }
+        //if encounters boulder, movement changes direction, clockwise to anti-clockwise vice versa
+<span class="fc" id="L42">        final Position p = adjacent.get(newPosition);</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">        if (checkMove(p) == false) {</span>
+<span class="fc" id="L44">            increment = increment * -1;</span>
+<span class="fc" id="L45">            return;</span>
+        }
+<span class="fc" id="L47">        moveAnimation(entity, p);</span>
+<span class="fc" id="L48">        entity.setPosition(p);</span>
+<span class="fc" id="L49">        initialPosition = newPosition;</span>
+<span class="fc" id="L50">    }</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean checkMove(Position position) {
+<span class="fc" id="L57">        List&lt;Entity&gt; eList = Dungeon.getInstance().getEntities();</span>
+<span class="fc" id="L58">        List&lt;Entity&gt; entities = eList.stream().filter(e -&gt; (e.getPosition().equals(position))).collect(Collectors.toList());</span>
+
+        //check if boulder will obstruct spider
+<span class="fc bfc" id="L61" title="All 2 branches covered.">        for (Entity e : entities) {</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">            if (e instanceof Boulder) {</span>
+<span class="fc" id="L63">                return false;</span>
+            }
+<span class="fc" id="L65">        }</span>
+<span class="fc" id="L66">        return true;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

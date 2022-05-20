@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Portal.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project</a> &gt; <a href="index.source.html" class="el_package">dungeonmania.entities.portal</a> &gt; <span class="el_source">Portal.java</span></div><h1>Portal.java</h1><pre class="source lang-java linenums">package dungeonmania.entities.portal;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.google.gson.JsonObject;
+
+import dungeonmania.dungeon.Dungeon;
+import dungeonmania.entities.Entity;
+import dungeonmania.entities.behaviours.Teleportable;
+import dungeonmania.entities.moving_entities.MovingEntity;
+import dungeonmania.entities.player.Player;
+import dungeonmania.entities.util.EntityUtils;
+import dungeonmania.exceptions.InvalidActionException;
+import dungeonmania.util.Direction;
+import dungeonmania.util.Position;
+
+public class Portal extends Entity {
+    
+    private static final String TYPE = &quot;portal&quot;;
+<span class="fc" id="L21">    Portal correspondingPortal = null;</span>
+
+    private String colour;
+
+    /**
+     * Constructor for the portal
+     * @param position
+     * @param colour
+     */
+    public Portal(Position position, String colour) {
+<span class="fc" id="L31">        super(TYPE + &quot;_&quot; + colour, position);</span>
+<span class="fc" id="L32">        this.colour = colour;</span>
+<span class="fc" id="L33">    }</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public JsonObject toJsonObject() {
+<span class="nc" id="L40">        JsonObject obj = new JsonObject();</span>
+<span class="nc" id="L41">        obj.addProperty(&quot;x&quot;, getPosition().getX());</span>
+<span class="nc" id="L42">        obj.addProperty(&quot;y&quot;, getPosition().getY());</span>
+<span class="nc" id="L43">        obj.addProperty(&quot;type&quot;, TYPE);</span>
+<span class="nc" id="L44">        obj.addProperty(&quot;colour&quot;, colour);</span>
+<span class="nc" id="L45">        return obj;</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onTick() {
+<span class="fc" id="L53">        List&lt;Entity&gt; entities = EntityUtils.getEntitiesAtPosition(getPosition());</span>
+<span class="fc" id="L54">        List&lt;Teleportable&gt; teleportable_entities = EntityUtils.getEntitiesToTypeList(entities, Teleportable.class);</span>
+
+<span class="fc bfc" id="L56" title="All 2 branches covered.">        for (Teleportable t : teleportable_entities) {</span>
+<span class="fc" id="L57">            boolean success = teleport((MovingEntity)t, t.getDirectionEntered());</span>
+
+<span class="fc bfc" id="L59" title="All 2 branches covered.">            if (!success) {</span>
+<span class="fc" id="L60">                Position prev_pos = t.getPrevPosition();</span>
+<span class="fc" id="L61">                ((MovingEntity)t).setPosition(prev_pos);</span>
+            }
+<span class="fc" id="L63">        }</span>
+<span class="fc" id="L64">    }</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean onOverlap(Entity entity, Direction dir) {
+<span class="fc" id="L71">        return teleport(dir);</span>
+    }
+
+    /**
+     * Teleports the player to the position dir away from the corresponding portal
+     * @param dir
+     * @return false - the player shouldn't move as it has already been teleported
+     */
+    private boolean teleport(Direction dir) {
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">        if (correspondingPortal == null){</span>
+<span class="nc" id="L81">            throw new InvalidActionException(&quot;Portal does not have a corresponding portal&quot;);</span>
+        }
+
+<span class="fc" id="L84">        Player player = Dungeon.getInstance().getPlayer();</span>
+
+<span class="fc bfc" id="L86" title="All 2 branches covered.">        if (player.checkMove(correspondingPortal.getPosition().translateBy(dir), dir)) {</span>
+<span class="fc" id="L87">            player.setPosition(correspondingPortal.getPosition().translateBy(dir));</span>
+        } 
+<span class="fc" id="L89">        return false;</span>
+    }
+
+    /**
+     * Teleports the player to the position dir away from the corresponding portal
+     * @param entity the entity to be teleported
+     * @param dir the direction to be teleported to in relation to the corresponding portal
+     */
+    private boolean teleport(MovingEntity entity, Direction dir) {
+<span class="pc bpc" id="L98" title="1 of 2 branches missed.">        if (correspondingPortal == null){</span>
+<span class="nc" id="L99">            throw new InvalidActionException(&quot;Portal does not have a corresponding portal&quot;);</span>
+        }
+
+<span class="fc bfc" id="L102" title="All 2 branches covered.">        if (entity.getMovementStrategy().checkMove(correspondingPortal.getPosition().translateBy(dir))) {</span>
+<span class="fc" id="L103">            entity.setPosition(correspondingPortal.getPosition().translateBy(dir));</span>
+<span class="fc" id="L104">            return true;</span>
+        } 
+<span class="fc" id="L106">        return false;</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public String getColour(){
+<span class="fc" id="L113">        return colour;</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Portal getCorresponding(){
+<span class="fc" id="L120">        return correspondingPortal;</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void link(Portal portal){
+<span class="pc bpc" id="L127" title="1 of 2 branches missed.">        if (portal.getColour() == this.getColour()) {</span>
+<span class="nc" id="L128">            this.correspondingPortal = portal;</span>
+        }  
+<span class="fc" id="L130">    }</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void init() {
+<span class="fc" id="L137">        List&lt;Portal&gt; portals = EntityUtils.getEntitiesToTypeList(Dungeon.getInstance().getEntities(), Portal.class);</span>
+
+<span class="fc" id="L139">        List&lt;Portal&gt; matchingPortals = portals.stream()</span>
+<span class="fc bfc" id="L140" title="All 4 branches covered.">                                              .filter(p -&gt; (p.getColour().equals(this.getColour())) &amp;&amp; (p != this))</span>
+<span class="fc" id="L141">                                              .collect(Collectors.toList());</span>
+
+<span class="pc bpc" id="L143" title="1 of 2 branches missed.">        if (matchingPortals.size() &lt; 1) {</span>
+<span class="nc" id="L144">            throw new InvalidActionException(&quot;Dungeon is invalid: Missing corresponding portal - a portal must be linked to exactly one other portal&quot;);</span>
+<span class="pc bpc" id="L145" title="1 of 2 branches missed.">        } else if (matchingPortals.size() &gt; 1) {</span>
+<span class="nc" id="L146">            throw new InvalidActionException(&quot;Dungeon is invalid: Too many corresponding portals - a portal must be linked to exactly one other portal&quot;);</span>
+        }
+
+<span class="fc" id="L149">        correspondingPortal = matchingPortals.get(0);</span>
+
+        // If a corresponding portal exists and it's correspondingPortal attribute has not yet been set, set it to this
+<span class="fc bfc" id="L152" title="All 2 branches covered.">        if (correspondingPortal.getCorresponding() != null) {</span>
+<span class="fc" id="L153">            correspondingPortal.link(this);</span>
+        }
+<span class="fc" id="L155">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

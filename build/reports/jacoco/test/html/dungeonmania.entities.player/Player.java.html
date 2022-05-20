@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Player.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project</a> &gt; <a href="index.source.html" class="el_package">dungeonmania.entities.player</a> &gt; <span class="el_source">Player.java</span></div><h1>Player.java</h1><pre class="source lang-java linenums">package dungeonmania.entities.player;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import com.google.gson.JsonObject;
+
+import dungeonmania.entities.behaviours.Collectable;
+import dungeonmania.entities.behaviours.EntityDamage;
+import dungeonmania.entities.behaviours.EntityHealth;
+import dungeonmania.entities.behaviours.Inventory;
+import dungeonmania.entities.key.Key;
+import dungeonmania.entities.moving_entities.FriendlyMercenary;
+import dungeonmania.entities.moving_entities.Mercenary;
+import dungeonmania.entities.player.battle_strategies.BattleStrategy;
+import dungeonmania.entities.player.status_states.StatusState;
+import dungeonmania.entities.the_one_ring.TheOneRing;
+import dungeonmania.entities.util.EntityUtils;
+import dungeonmania.response.models.AnimationQueue;
+import dungeonmania.dungeon.Dungeon;
+import dungeonmania.dungeon.util.InventorySaver;
+import dungeonmania.entities.Entity;
+import dungeonmania.util.Direction;
+import dungeonmania.util.Position;
+
+public class Player extends Entity implements Inventory, EntityHealth, EntityDamage {
+    private static final String TYPE = &quot;player&quot;;
+<span class="fc" id="L29">    private static int FULL_HEALTH = 20; //subject to change</span>
+    private static StatusState defaultStatus;
+    private static BattleStrategy defaultBattleStrategy;
+
+    private int health;
+<span class="fc" id="L34">    private int damage = 1;</span>
+<span class="fc" id="L35">    private List&lt;Collectable&gt; inventory = new ArrayList&lt;Collectable&gt;();</span>
+<span class="fc" id="L36">    private List&lt;FriendlyMercenary&gt; friendlyMercenaries = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L37">    private boolean battle = false;</span>
+
+    private BattleStrategy battleStrategy;
+
+    private StatusState status;
+
+    public Player(Integer health, Position position) {
+<span class="fc" id="L44">        super(TYPE, new Position(position.getX(), position.getY(), 50));</span>
+<span class="pc bpc" id="L45" title="1 of 2 branches missed.">        this.health = health != null ? health.intValue() : FULL_HEALTH;</span>
+<span class="fc" id="L46">    }</span>
+
+    public Player(Position position) {
+<span class="fc" id="L49">        this(FULL_HEALTH, position);</span>
+<span class="fc" id="L50">    }</span>
+
+    /**
+     * Moves the player to a new position according to direction
+     * @param direction
+     */
+    public void move(Direction direction) {
+<span class="fc" id="L57">        battle = false;</span>
+<span class="fc" id="L58">        final Position p = getPosition().translateBy(direction);</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">        if (checkMove(p, direction)) {               </span>
+<span class="fc" id="L60">            this.setPosition(p);</span>
+        }
+        else {
+<span class="fc" id="L63">            return;</span>
+        }      
+<span class="fc" id="L65">    }</span>
+    /**
+     * Checks if player can move in a given direction
+     * @param position
+     * @param dir
+     * @return
+     */
+    public boolean checkMove(Position position, Direction dir) {
+<span class="fc" id="L73">        final Position p = position;</span>
+        //gets entity at position player will be moving to
+<span class="fc" id="L75">        List&lt;Entity&gt; entities = EntityUtils.getEntitiesAtPosition(p);</span>
+        
+<span class="fc" id="L77">        boolean condition = true;</span>
+        
+<span class="fc bfc" id="L79" title="All 2 branches covered.">        for (Entity e : entities) {   </span>
+<span class="pc bpc" id="L80" title="1 of 4 branches missed.">            condition = condition &amp;&amp; e.onOverlap(this, dir);</span>
+<span class="fc" id="L81">        }</span>
+<span class="fc" id="L82">        return condition;</span>
+    }
+
+    /**
+     * Performs a battle
+     * Battle is calculated using formula :
+     * health = health - ((enemy health * enemy damage) / 10) * dmg multiplier from armor or weapons
+     * enemy health = enemy health - ((health * damage * dmg multiplier) /5) * dmg multiplier from armor or weapons
+     * @param e
+     */
+    public void battle(Entity e) {
+<span class="fc" id="L93">        battleStrategy.battle(e);</span>
+<span class="fc" id="L94">        battle = true;</span>
+<span class="fc" id="L95">        checkMercRange(Dungeon.getInstance());</span>
+<span class="fc" id="L96">    }</span>
+
+    /**
+     * checks if player is within battle radius of mercenary
+     * if in range, move the the mercenary an extra time
+     * @param d
+     */
+    public void checkMercRange(Dungeon d) {
+        //checks battle radius of mercenaries to see if they move an additional time
+<span class="fc bfc" id="L105" title="All 2 branches covered.">        for (Entity entity: new ArrayList&lt;&gt;(d.getEntities())) {</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">            if (entity instanceof Mercenary) {</span>
+<span class="fc" id="L107">                Mercenary m = (Mercenary) entity;</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">                if (m.checkBattleRadius(this) == true) {</span>
+<span class="fc" id="L109">                    m.onTick();</span>
+                }
+            }
+<span class="fc" id="L112">        }</span>
+<span class="fc" id="L113">        return;</span>
+    }
+    
+    /**
+     * check if player is within battle radius of friendly mercenary
+     * if in range, return mercenary
+     * @param d
+     * @return friendly mercenary
+     */
+    public FriendlyMercenary checkFriendlyMercRange(Dungeon d) {
+<span class="nc bnc" id="L123" title="All 2 branches missed.">        for (Entity entity: new ArrayList&lt;&gt;(d.getEntities())) {</span>
+<span class="nc bnc" id="L124" title="All 2 branches missed.">            if (entity.getType().equals(&quot;mercenary_friendly&quot;)) {</span>
+<span class="nc" id="L125">                FriendlyMercenary m = (FriendlyMercenary) entity;</span>
+<span class="nc bnc" id="L126" title="All 2 branches missed.">                if (m.checkBattleRadius(this) == true) {</span>
+<span class="nc" id="L127">                    return m;</span>
+                }
+            }
+<span class="nc" id="L130">        }</span>
+<span class="nc" id="L131">        return null;</span>
+    }
+
+    /**
+     * Removes 'numRemove' amount of objects of type 'type'
+     * @precondition There will be at least 'numRemove' objects of type 'type' in the player's inventory
+     * @param type
+     */
+    public void removeNumOfTypeFromInventory(int numRemove, Class&lt;?&gt; type) {
+        
+<span class="fc" id="L141">        List&lt;Collectable&gt; collectables = EntityUtils.getCollectablesFromInventory(inventory, type);</span>
+
+<span class="fc bfc" id="L143" title="All 2 branches covered.">        for (int i = 0; i &lt; numRemove; i++) {</span>
+<span class="fc" id="L144">            inventory.remove(collectables.get(i)); </span>
+        }
+<span class="fc" id="L146">    }</span>
+
+    /**
+     * @return int return the health
+     */
+    public int getHealth() {
+<span class="fc" id="L152">        return health;</span>
+    }
+    
+    /**
+     * Effects upon the death of this player
+     */
+    private void onDeath() {
+        // Check for one ring to revive
+<span class="fc" id="L160">        List&lt;TheOneRing&gt; tor = EntityUtils.getInventoryToTypeList(inventory, TheOneRing.class);</span>
+<span class="fc bfc" id="L161" title="All 2 branches covered.">        if (tor.size() == 0) {</span>
+<span class="fc" id="L162">            Dungeon.getInstance().removeEntity(this);</span>
+        } else {
+<span class="fc" id="L164">            tor.get(0).rarePower();</span>
+        }
+<span class="fc" id="L166">    }</span>
+
+    /**
+     * @param health the health to set
+     */
+    public void setHealth(int health) {
+<span class="fc bfc" id="L172" title="All 2 branches covered.">        if (health &lt; FULL_HEALTH) {</span>
+<span class="fc" id="L173">            this.health = health;</span>
+        // Checks if the player is dead
+        } 
+        else {
+<span class="fc" id="L177">            this.health = FULL_HEALTH;</span>
+<span class="fc" id="L178">            return;</span>
+        }
+<span class="fc bfc" id="L180" title="All 2 branches covered.">        if (health &lt;= 0) {</span>
+<span class="fc" id="L181">            onDeath();</span>
+        }
+<span class="fc" id="L183">    }  </span>
+    
+    /**
+     * @param health the value to set full health to
+     */
+    public static void setFullHealth(int full_health) {
+<span class="fc" id="L189">        FULL_HEALTH = full_health;</span>
+<span class="fc" id="L190">    }</span>
+
+    /**
+     * @return int return full health
+     */
+    public int getFullHealth() {
+<span class="nc" id="L196">        return FULL_HEALTH;</span>
+    }
+
+    /**
+     * @return List&lt;Collectable&gt; return the inventory
+     */
+    @Override
+    public List&lt;Collectable&gt; getInventory() {
+<span class="fc" id="L204">        return inventory;</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onTick() {
+<span class="fc" id="L212">        status.nextState();</span>
+<span class="fc" id="L213">    }</span>
+
+<span class="nc" id="L215">    public void move(Position translateBy) {}</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean onOverlap(Entity entity, Direction dir) {
+<span class="fc" id="L222">        return true;         </span>
+    }
+
+    /**
+     * @param damage the damage to set
+     */
+    public void setDamage(int damage) {
+<span class="nc" id="L229">        this.damage = damage;</span>
+<span class="nc" id="L230">    }</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public JsonObject toJsonObject(){
+<span class="fc" id="L237">        JsonObject obj = super.toJsonObject();</span>
+<span class="fc" id="L238">        obj.addProperty(&quot;health&quot;, health);</span>
+<span class="fc" id="L239">        obj.add(&quot;inventory&quot;, InventorySaver.inventoryToJsonArray(inventory));</span>
+<span class="fc" id="L240">        return obj;</span>
+    }
+    
+    /**
+     * 
+     * @param item add the collectable entity to the Inventory
+     */
+    public void addItemToInventory(Collectable item) {
+<span class="fc bfc" id="L248" title="All 2 branches covered.">        if (item.getClass().equals(Key.class)) {</span>
+<span class="fc bfc" id="L249" title="All 2 branches covered.">            for (Collectable obj : inventory) {</span>
+<span class="pc bpc" id="L250" title="1 of 2 branches missed.">                if (obj.getClass().equals(Key.class)) {</span>
+<span class="nc" id="L251">                    return;</span>
+                }
+<span class="fc" id="L253">            }</span>
+        }
+<span class="fc" id="L255">        inventory.add(item);</span>
+<span class="fc" id="L256">    }</span>
+
+    /**
+     * 
+     * @param item add the collectable entity to the Inventory
+     */
+    public void removeItemFromInventory(Collectable item) {
+<span class="fc" id="L263">        inventory.remove(item);</span>
+<span class="fc" id="L264">    }</span>
+    
+    /**
+     * 
+     * @param sets the Inventory
+     */
+    public void setInventory(List&lt;Collectable&gt; inventory) {
+<span class="fc" id="L271">        this.inventory = inventory;</span>
+<span class="fc" id="L272">    }</span>
+
+    /**
+     * @return int return the damage
+     */
+    public int getDamage() {
+<span class="fc" id="L278">        return damage;</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void init() {
+<span class="fc" id="L286">        friendlyMercenaries = EntityUtils.getEntitiesToTypeList(Dungeon.getInstance().getEntities(), FriendlyMercenary.class);</span>
+<span class="fc" id="L287">        friendlyMercenaries.removeIf(e -&gt; Mercenary.class.isInstance(e));</span>
+<span class="fc" id="L288">    }</span>
+    /**
+     * Returns the allys of this player
+     * @return List&lt;FriendlyMercenary&gt;
+     */
+    public List&lt;FriendlyMercenary&gt; getAllyList() {
+<span class="fc" id="L294">        return new ArrayList&lt;&gt;(friendlyMercenaries);</span>
+    }
+    /**
+     * adds an ally for this player
+     */
+    public void addAlly(FriendlyMercenary ally) {
+<span class="fc" id="L300">        friendlyMercenaries.add(ally);</span>
+<span class="fc" id="L301">    }</span>
+    /**
+     * removes an ally for this player
+     */
+    public void removeAlly(FriendlyMercenary ally) {
+<span class="fc" id="L306">        friendlyMercenaries.remove(ally);</span>
+<span class="fc" id="L307">    }</span>
+    /**
+     * gets the BattleStrategy of the player
+     * @return BattleStrategy
+     */
+    public BattleStrategy getBattleStrategy() {
+<span class="nc" id="L313">        return battleStrategy;</span>
+    }
+    /**
+     * Gets the status of the player
+     * @return StatusState
+     */
+    public StatusState getStatus() {
+<span class="nc" id="L320">        return status;</span>
+    }
+    /**
+     * sets the BattleStrategy of the player
+     */
+    public void setBattleStrategy(BattleStrategy battleStrategy) {
+<span class="fc" id="L326">        this.battleStrategy = battleStrategy;</span>
+<span class="fc" id="L327">    }</span>
+    /**
+     * sets the status of the player
+     */
+    public void setStatus(StatusState status) {
+<span class="fc" id="L332">        this.status = status;</span>
+<span class="fc" id="L333">    }</span>
+
+    /**
+     * @return List&lt;FriendlyMercenary&gt; return the friendlyMercenaries
+     */
+    public List&lt;FriendlyMercenary&gt; getFriendlyMercenaries() {
+<span class="nc" id="L339">        return friendlyMercenaries;</span>
+    }
+
+    /**
+     * @param friendlyMercenaries the friendlyMercenaries to set
+     */
+    public void setFriendlyMercenaries(List&lt;FriendlyMercenary&gt; friendlyMercenaries) {
+<span class="nc" id="L346">        this.friendlyMercenaries = friendlyMercenaries;</span>
+<span class="nc" id="L347">    }</span>
+
+    /**
+     * @return BattleStrategy return the defaultBattleStrategy
+     */
+    public static BattleStrategy getDefaultBattleStrategy() {
+<span class="fc" id="L353">        return defaultBattleStrategy;</span>
+    }
+
+    /**
+     * @return BattleStrategy return the defaultBattleStrategy
+     */
+    public static void setDefaultBattleStrategy(BattleStrategy strategy) {
+<span class="fc" id="L360">        defaultBattleStrategy = strategy;</span>
+<span class="fc" id="L361">    }</span>
+
+    /**
+     * @return StatusState return the defaultStatus
+     */
+    public static StatusState getDefaultStatus() {
+<span class="fc" id="L367">        return defaultStatus;</span>
+    }
+
+    /**
+     * @return StatusState return the defaultStatus
+     */
+    public static void setDefaultStatus(StatusState state) {
+<span class="fc" id="L374">        defaultStatus = state;</span>
+<span class="fc" id="L375">    }</span>
+
+    /**
+     * Animations for the player
+     */
+    @Override
+    public List&lt;AnimationQueue&gt; getAnimationResponse(){
+<span class="fc" id="L382">        animationBuffer.add(new AnimationQueue(&quot;PostTick&quot;, getId(), Arrays.asList(&quot;healthbar set &quot; + (float) health / FULL_HEALTH, &quot;healthbar tint 0x00ff00&quot;), false, -100));</span>
+<span class="fc bfc" id="L383" title="All 2 branches covered.">        if (battle == true) {</span>
+<span class="fc" id="L384">            animationBuffer.add(new AnimationQueue(&quot;PostTick&quot;, getId(), Arrays.asList(&quot;healthbar set &quot; + (float) health / FULL_HEALTH, &quot;healthbar tint 0xff0000, over 0.5s&quot;,&quot;translate-x -0.5&quot;, &quot;translate-x 0.5, over 0.2s&quot;, &quot;sprite player_battle&quot;), false, -1));</span>
+        }
+<span class="fc" id="L386">        return super.getAnimationResponse();</span>
+    }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public float damageMultiplier() {
+<span class="nc" id="L393">        return 1;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dungeonmania.IntegrationTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2021-11-14T12:41:51" hostname="DESKTOP-C1T19SJ" time="0.319">
+  <properties/>
+  <testcase name="playAdvanced()" classname="dungeonmania.IntegrationTest" time="0.089"/>
+  <testcase name="playAdvanced2()" classname="dungeonmania.IntegrationTest" time="0.215"/>
+  <testcase name="playBoulders()" classname="dungeonmania.IntegrationTest" time="0.004"/>
+  <testcase name="playMaze()" classname="dungeonmania.IntegrationTest" time="0.01"/>
+  <system-out><![CDATA[5
+5
+5
+5
+5
+5
+5
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
