@@ -1,2 +1,3 @@
 # Dungeon-Mania
-To play, run App.java inside src/main/java
+## To start
+Run `App.java` inside src/main/java
